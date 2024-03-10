@@ -43,55 +43,33 @@ Knowing our data, we can create model classes that inherit from SerialWeaverBase
 
 ```python
 # my_package/models.py
-1
-from serial_weaver import SerialWeaverBaseModel
-
-2
-3
-
-
-class ProductModel(SerialWeaverBaseModel):
-
-
-    4
-_key = ("prod_id",)  # (mandatory) fields that should be used to uniquely ID a model instance.
-5
-_directive = "products"  # (optional) yaml key that indicates data for instances of this model
-6
-_err_on_duplicate = True  # (optional) if data leading to duplicates are present, should we error?
-7
-8
-prod_id: str
-9
-name: str
-10
-category: str
-11
-12  # Product's specific behaviors coded as methods here 
-13  # (...)
+1  from serial_weaver import SerialWeaverBaseModel
+2  
+3  class ProductModel(SerialWeaverBaseModel):
+4      _key = ("prod_id",)  # (mandatory) fields that should be used to uniquely ID a model instance.
+5      _directive = "products"  # (optional) yaml key that indicates data for instances of this model
+6      _err_on_duplicate = True  # (optional) if data leading to duplicates are present, should we error?
+7  
+8      prod_id: str
+9      name: str
+10     category: str
+11     # Product's specific behaviors coded as methods here
+12     # (...)
 ```
 
 With the data modeling done, we only need to load our models up.
 
 ```python
-# my_package/main.py
-1
-import os
-
-2
-from serial_weaver.utils import generate_from_file
-
-3
-4
-if __name__ == "__main__":
-    5  # this makes sure serial_weaver will know where to look for model classes.
-6  # if your model classes are scattered through more than on module, make it a CSV str.
-7
-os.environ["MODELS_MODULES"] = "my_package.models"
-8
-9  # all the heavy-lifting happens here seamlessly.
-10
-generate_from_file("products.yaml")
+1  import os
+2  from serial_weaver.utils import generate_from_file
+3  
+4  if __name__ == "__main__":
+5      # this makes sure serial_weaver will know where to look for model classes.
+6      # if your model classes are scattered through more than on module, make it a CSV str.
+7      os.environ["MODELS_MODULES"] = "my_package.models"
+8  
+9      # all the heavy-lifting happens here seamlessly.
+10     generate_from_file("products.yaml")
 ```
 
 Except for the imports and the "main guard" we didn't have to do a lot to get instances of our CustomerModel. Let's 
@@ -114,17 +92,12 @@ same `my_package/main.py` file.
 
 ```python
 # my_package/main.py
-11
-import json
-
+11  import json
 12
-from serial_weaver import GLOBAL_DATA_STORE as datastore
-
-13
+13  from serial_weaver import GLOBAL_DATA_STORE as datastore
 14
-print(datastore.records)
-15
-print(json.dumps(datastore.as_dict(), indent=4))
+15  print(datastore.records)
+16  print(json.dumps(datastore.as_dict(), indent=4))
 ```
 
 As you might gather from the above code, [GLOBAL_DATA_STORE](/docs/the_global_data_store.md) is an object that holds 
@@ -143,43 +116,43 @@ returns a regular dictionary with the same data, and that can be prettier printe
 string, as we did in line 15:
 ```bash
 {
-    "ProductModel": [
-        {
-            "prod_id": "ABC123",
-            "name": "Lembas",
-            "category": "food"
-        },
-        {
-            "prod_id": "GHI789",
-            "name": "There and Back Again",
-            "category": "books"
-        },
-        {
-            "prod_id": "JKL012",
-            "name": "Bow & Arrows",
-            "category": "sports"
-        },
-        {
-            "prod_id": "MNO345",
-            "name": "Mouth of Sauron - Live from The Black Gates",
-            "category": "music"
-        },
-        {
-            "prod_id": "PQR678",
-            "name": "Eagle Flight Tickets to Mordor",
-            "category": "travel"
-        },
-        {
-            "prod_id": "VWX234",
-            "name": "The Mazarbul-Book",
-            "category": "books"
-        },
-        {
-            "prod_id": "YZA567",
-            "name": "Dwarfs-tossing Gloves",
-            "category": "sports"
-        }
-    ]
+  "ProductModel": [
+    {
+        "prod_id": "ABC123",
+        "name": "Lembas",
+        "category": "food"
+    },
+    {
+        "prod_id": "GHI789",
+        "name": "There and Back Again",
+        "category": "books"
+    },
+    {
+        "prod_id": "JKL012",
+        "name": "Bow & Arrows",
+        "category": "sports"
+    },
+    {
+        "prod_id": "MNO345",
+        "name": "Mouth of Sauron - Live from The Black Gates",
+        "category": "music"
+    },
+    {
+        "prod_id": "PQR678",
+        "name": "Eagle Flight Tickets to Mordor",
+        "category": "travel"
+    },
+    {
+        "prod_id": "VWX234",
+        "name": "The Mazarbul-Book",
+        "category": "books"
+    },
+    {
+        "prod_id": "YZA567",
+        "name": "Dwarfs-tossing Gloves",
+        "category": "sports"
+    }
+  ]
 }
 ```
 
@@ -252,67 +225,35 @@ lines 2 to 4
 
 ```python
 # my_package/models.py
-1
-from serial_weaver import SerialWeaverBaseModel
-
-2
-from serial_weaver import SerialWeaverRenderableModel
-
-3
-from pydantic import EmailStr, Field
-
-4
-from typing import Tuple
-
-#
-#   class ProductModel(...)
-#
-17
-
-
-class CustomerModel(
-    SerialWeaverRenderableModel):  # SerialWeaverRenderableModel is also a child class of SerialWeaverBaseModel
-
-
-    18
-_key = ("email",)
-19
-_directive = "customers"
-20
-_err_on_duplicate = True
-21
-22
-name: str
-23
-age: int = Field(ge=18, le=100)
-24
-email: EmailStr
-25
-flagged_interests: Tuple[ProductModel, ...]
-26
-27 @ classmethod
-28
-
-
-def create(cls, dict_args, *args, **kwargs):
-
-
-    29
-interests = list()
-30
-31
-for category in dict_args["flagged_interests"]:
-    32
-interests += [prod for prod in ProductModel.filter({"category": category})]
-33
-34  # serial_weaver will take care of ultimately converting this to a tuple.
-35
-dict_args["flagged_interests"] = interests
-36
-37
-super().create(dict_args, *args, **kwargs)
-38
-39  # here come other methods for CustomerModel (...)
+17  from serial_weaver import SerialWeaverBaseModel
+18  from serial_weaver import SerialWeaverRenderableModel
+19  from pydantic import EmailStr, Field
+20  from typing import Tuple
+21  
+22  # class ProductModel(...)
+23  
+24  class CustomerModel(SerialWeaverRenderableModel):  # SerialWeaverRenderableModel is also a child class of SerialWeaverBaseModel
+25      _key = ("email",)
+26      _directive = "customers"
+27      _err_on_duplicate = True
+28      name: str
+29      age: int = Field(ge=18, le=100)
+30      email: EmailStr
+31      flagged_interests: Tuple[ProductModel, ...]
+32  
+33      @classmethod
+34      def create(cls, dict_args, *args, **kwargs):
+35          interests = list()
+36  
+37          for category in dict_args["flagged_interests"]:
+38              interests += [prod for prod in ProductModel.filter({"category": category})]
+39  
+40          # serial_weaver will take care of ultimately converting this to a tuple.
+41          dict_args["flagged_interests"] = interests
+42  
+43          super().create(dict_args, *args, **kwargs)
+44  
+45          # here come other methods for CustomerModel (...)
 ```
 
 Before anything else, it's important to say that `SerialWeaverRenderableModel` also inherits from 
@@ -346,36 +287,22 @@ this:
 
 ```python
 # my_package/main.py
-1
-import os
-
-2
-import json
-
-3
-from serial_weaver import GLOBAL_DATA_STORE as datastore
-
-4
-from serial_weaver.utils import generate_from_file
-
-5
-6
-if __name__ == "__main__":
-    7  # this makes sure serial_weaver will know where to look for model classes.
-8  # if your model classes are scattered through more than on module, make it a CSV str.
-9
-os.environ["MODELS_MODULES"] = "my_package.models"
-10
-11  # all the heavy-lifting happens here seamlessly.
-12
-generate_from_file("products.yaml")
-13
-generate_from_file("customers.json")
-14
-15
-print(datastore.records)
-16
-print(json.dumps(datastore.as_dict(), indent=4))  
+1  import os
+2  import json
+3  from serial_weaver import GLOBAL_DATA_STORE as datastore
+4  from serial_weaver.utils import generate_from_file
+5  
+6  if __name__ == "__main__":
+7      # this makes sure serial_weaver will know where to look for model classes.
+8      # if your model classes are scattered through more than on module, make it a CSV str.
+9      os.environ["MODELS_MODULES"] = "my_package.models"
+10 
+11     # all the heavy-lifting happens here seamlessly.
+12     generate_from_file("products.yaml")
+13     generate_from_file("customers.json")
+14 
+15     print(datastore.records)
+16     print(json.dumps(datastore.as_dict(), indent=4)) 
 ```
 
 Below is the output for line 16 only:
@@ -455,7 +382,7 @@ use when rendering their data into templates: `./templates/customer.j2`.
 # my_package/templates/customer.j2
 {% if send_ads %}
 Dear {{ name | capitalize }},
-We'd like to let you know that we rencently added the following products to our store that we think you might like:
+We'd like to let you know that we recently added the following products to our store that we think you might like:
 {% for product in flagged_interests -%}
     - {{ product.name }}
 {% endfor %}
@@ -517,21 +444,16 @@ Let's use the `customers.json` file we created in Example 2 above. The following
 to generate files of other formats:
 
 ```python
-1
-from serial_weaver.utils import convert_src_file_to
-
-2
+1  from serial_weaver.utils import convert_src_file_to
+2  
 3  # converts src_file to YAML and saves it to a file named "yml_customers.yaml"
-4
-convert_src_file_to(src_file="customers.json", dst_format="yaml", dst_file="yml_customers.yaml")
-5
+4  convert_src_file_to(src_file="customers.json", dst_format="yaml", dst_file="yml_customers.yaml")
+5  
 6  # converts src_file to TOML and saves it to a file named "customers.toml"
-7
-convert_src_file_to(src_file="customers.json", dst_format="toml")
-8
+7  convert_src_file_to(src_file="customers.json", dst_format="toml")
+8  
 9  # raises SerialWeaverDumperError because the INI format doesn't support lists.
-10
-convert_src_file_to(src_file="customers.json", dst_format="ini")
+10 convert_src_file_to(src_file="customers.json", dst_format="ini")
 ```
 
 The `convert_src_file_to` function needs only to know: 
