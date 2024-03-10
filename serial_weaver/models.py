@@ -100,9 +100,15 @@ class SerialWeaverBaseModel(BaseModel):
             3 - the type associated with the field is of base type 'tuple'.
         
         This is done in the spirit of best-effort to ensure the hash-ability of the model
-        instance in a seamless way. And, although this works, ideally, the user should 
+        instance in a seamless way. Although this helps, ideally, users should
         guarantee this by themselves by passing tuples instead of lists when the field of 
         the model class is of type tuple.
+
+        TODO: expand on this to allow greater flexibility. For now, it's just a
+        placeholder to ensure the dict_args is hashable. In the future, this
+        class should allow a custom type of 'hashable sequence' to be defined
+        as a means to represent ManyToOne relationships and then automatically
+        convert collection types (like lists or sets) to this custom type.
 
         Returns:
             Dict[str, Any]: the converted dict.
