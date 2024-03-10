@@ -1,0 +1,10 @@
+{% if send_ads %}
+Dear {{ name | capitalize }},
+We'd like to let you know that we recently added the following products to our store that we think you might like:
+{% for product in flagged_interests -%}
+    - {{ product.name }}
+{% endfor %}
+We hope you find something you like!
+
+OBS: You are receiving this message in {{ email }} because you are registered for receiving adds
+{% endif %}

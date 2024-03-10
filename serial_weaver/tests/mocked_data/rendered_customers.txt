@@ -1,0 +1,28 @@
+Rendered template for customer: Alice Johnson:
+
+Dear Alice johnson,
+We'd like to let you know that we recently added the following products to our store that we think you might like:
+- Eagle Flight Tickets to Mordor
+- Lembas
+
+We hope you find something you like!
+
+OBS: You are receiving this message in alice.johnson@example.com because you are registered for receiving adds
+
+--------------------------------------------------
+Rendered template for customer: Jane Smith:
+Customer doesn't have send_ads set to True
+--------------------------------------------------
+Rendered template for customer: John Doe:
+
+Dear John doe,
+We'd like to let you know that we recently added the following products to our store that we think you might like:
+- Bow & Arrows
+- Dwarfs-tossing Gloves
+- Mouth of Sauron - Live from The Black Gates
+
+We hope you find something you like!
+
+OBS: You are receiving this message in john.doe@example.com because you are registered for receiving adds
+
+--------------------------------------------------

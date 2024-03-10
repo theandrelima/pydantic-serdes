@@ -1,0 +1,28 @@
+products:
+  - prod_id: ABC123
+    name: Lembas
+    category: food
+
+  - prod_id: GHI789
+    name: There and Back Again
+    category: books
+
+  - prod_id: JKL012
+    name: Bow & Arrows
+    category: sports
+
+  - prod_id: MNO345
+    name: Mouth of Sauron - Live from The Black Gates
+    category: music
+
+  - prod_id: PQR678
+    name: Eagle Flight Tickets to Mordor
+    category: travel
+
+  - prod_id: VWX234
+    name: The Mazarbul-Book
+    category: books
+
+  - prod_id: YZA567
+    name: Dwarfs-tossing Gloves
+    category: sports

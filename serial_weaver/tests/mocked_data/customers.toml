@@ -1,0 +1,21 @@
+[[customers]]
+name = "John Doe"
+age = 25
+email = "john.doe@example.com"
+send_ads = true
+flagged_interests = [ "sports", "music",]
+
+[[customers]]
+name = "Jane Smith"
+age = 30
+email = "jane.smith@example.com"
+send_ads = false
+flagged_interests = [ "books",]
+
+[[customers]]
+name = "Alice Johnson"
+age = 35
+email = "alice.johnson@example.com"
+send_ads = true
+flagged_interests = [ "travel", "food",]
+

@@ -1,0 +1,21 @@
+customers:
+- age: 25
+  email: john.doe@example.com
+  flagged_interests:
+  - sports
+  - music
+  name: John Doe
+  send_ads: true
+- age: 30
+  email: jane.smith@example.com
+  flagged_interests:
+  - books
+  name: Jane Smith
+  send_ads: false
+- age: 35
+  email: alice.johnson@example.com
+  flagged_interests:
+  - travel
+  - food
+  name: Alice Johnson
+  send_ads: true
