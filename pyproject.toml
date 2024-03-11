@@ -3,8 +3,8 @@ name = "serial_bus"
 version = "0.1.0"
 description = "A Python package that standardizes data parsing from multiple serialized formats into pydantic models."
 authors = ["André Lima"]
-documentation= "https://github.com/theandrelima/serial-weaver"
-keywords=["serialization", "deserialization", "parsing", "pydantic-models", "seria-to-pydantic", "pydantic-to-serial"]
+documentation= "https://github.com/theandrelima/serial_bus"
+keywords=["serialization", "deserialization", "parsing", "pydantic-models", "serial-to-pydantic", "pydantic-to-serial"]
 license = "MIT"
 readme = "README.md"
 packages = [{include = "serial_bus"}]
