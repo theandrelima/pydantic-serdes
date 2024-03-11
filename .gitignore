@@ -161,4 +161,4 @@ cython_debug/
 
 .python-version
 
-serial_bus/tests/mocked_data/_*
+tests/mocked_data/_*

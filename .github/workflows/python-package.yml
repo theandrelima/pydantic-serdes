@@ -20,4 +20,4 @@ jobs:
         if [ -f pyproject.toml ]; then pip install poetry && poetry install; fi
     - name: Run tests
       run: |
-        pytest
+        poetry run pytest

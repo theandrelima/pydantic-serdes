@@ -13,13 +13,13 @@ formats = ["toml", "yaml", "yml", "ini"]
 # Define a fixture for the source files
 @pytest.fixture
 def src_file():
-    return "serial_bus/tests/mocked_data/customers.json"
+    return "tests/mocked_data/customers.json"
 
 
 # Define a fixture for the destination files
 @pytest.fixture(params=formats, ids=lambda x: f"dst_format_{x}")
 def dst_file(request):
-    return f"serial_bus/tests/mocked_data/_customers.{request.param}"
+    return f"tests/mocked_data/_customers.{request.param}"
 
 
 def test_format_conversion(src_file, dst_file):
@@ -34,6 +34,6 @@ def test_format_conversion(src_file, dst_file):
 
             # Compare the created file with the expected file
             with open(dst_file, "r") as f_created:
-                expected_file = f"serial_bus/tests/mocked_data/customers.{dst_format}"
+                expected_file = f"tests/mocked_data/customers.{dst_format}"
                 with open(expected_file, "r") as f_expected:
                     assert f_created.read() == f_expected.read()
