@@ -34,9 +34,9 @@ functions to meet these needs, following these conventions:
 - the function(s) should receive an argument representing the input dict and return the serialized data as a string.
 
 
-- the function(s) should be placed in a module, and the module's dotted path should be set in the `DUMPERS_MODULE` 
+- the function(s) must be placed in a single module, and the module's dotted path must be set in the `DUMPERS_MODULE` 
   environment variable. For example, if your project's package is named 'my_package' and you created custom dumper 
-  function(s) in a module named 'my_dumpers.py' you should set the `DUMPERS_MODULE` environment variable to 
+  function(s) in a module named 'my_dumpers.py', then you must set the `DUMPERS_MODULE` environment variable to 
   `my_package.my_dumpers`.
 
 Users are encouraged to look at [dumpers.py](/serial_bus/dumpers.py) to get an idea of how a dumper function 
