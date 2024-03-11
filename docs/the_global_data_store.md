@@ -1,9 +1,9 @@
 # The GLOBAL_DATA_STORE
 > *OBS: this section is technically detailed and is provided for the sake of completeness. Its reading is not 
-> crucial for being able to use Serial Weaver, but might help gaining a more complete understanding of the
+> crucial for being able to use SerialBus, but might help gaining a more complete understanding of the
 > tool as a whole.*
 
-`GLOBAL_DATA_STORE` is a global scope variable found in [datastore.py](/serial_weaver/datastore.py) module that 
+`GLOBAL_DATA_STORE` is a global scope variable found in [datastore.py](/serial_bus/datastore.py) module that 
 is intended to hold a single instance of the `ModelsGlobalStore` class, also found in the same module. This instance 
 is meant to be shared across the entire application, providing a centralized place to store and access model instances.
 
@@ -21,15 +21,15 @@ accessed by calling `get_global_data_store`.
 
 ## The `ModelsGlobalStore` class
 The `ModelsGlobalStore` class is designed to be a global store for all models in the application. It uses a 
-defaultdict to store models, where the keys are the model class names and the values are [SerialWeaverSortedSet](/serial_weaver/custom_collections.py) objects. The `SerialWeaverSortedSet` is a custom collection that 
+defaultdict to store models, where the keys are the model class names and the values are [SerialBusSortedSet](/serial_bus/custom_collections.py) objects. The `SerialBusSortedSet` is a custom collection that 
 stores the models in a sorted order, based on the `key` property of the model, which in turn simply returns all 
 values associated with each attribute namely defined by the tuple of strings in the `._key` attribute of the model 
 class.
 
 Here's a breakdown of its attributes and methods:
 
-- `_records`: This is a defaultdict that stores the models. It's initialized with `SerialWeaverSortedSet` as the 
-  default factory function, so any new keys will automatically be assigned an empty `SerialWeaverSortedSet`.
+- `_records`: This is a defaultdict that stores the models. It's initialized with `SerialBusSortedSet` as the 
+  default factory function, so any new keys will automatically be assigned an empty `SerialBusSortedSet`.
 
 - `records`: This is a property that provides access to `_records`. It has a getter and a setter. The getter simply 
   returns `_records`. The setter raises a `DataStoreDirectAssignmentError` if you try to assign to records directly, 
@@ -41,13 +41,13 @@ Here's a breakdown of its attributes and methods:
 
 - `save(obj)`: This method saves a model instance to the global store. It first checks if the object is already in 
   the store and raises a `ModelAlreadyExistsError` if it is and the object's `_err_on_duplicate` attribute is True. 
-  Otherwise, it adds the object to the appropriate `SerialWeaverSortedSet` in `_record` defaultdict.
+  Otherwise, it adds the object to the appropriate `SerialBusSortedSet` in `_record` defaultdict.
 
 - `_get_cls_name(obj)`: This private method returns the object's class name. It checks if the object is a class or 
   an instance and returns the appropriate name.
 
 - `_search(model_class, search_params)`: This private method searches the records of a given model class based on 
-  the search_params. If search_params is provided, it returns a `SerialWeaverSortedSet` of records where the 
+  the search_params. If search_params is provided, it returns a `SerialBusSortedSet` of records where the 
   attribute specified by search_params matches the value. If search_params is not provided, it returns all records 
   of the given model class.
 
@@ -64,5 +64,5 @@ Here's a breakdown of its attributes and methods:
 
 In summary, `ModelsGlobalStore` provides a global, sorted store for models. It provides methods to add models to the 
 store, and to search for and retrieve models from the store based on their attributes. The store is implemented as a 
-defaultdict of `SerialWeaverSortedSet` objects, ensuring that each set of models of the same class is kept in 
+defaultdict of `SerialBusSortedSet` objects, ensuring that each set of models of the same class is kept in 
 sorted order.

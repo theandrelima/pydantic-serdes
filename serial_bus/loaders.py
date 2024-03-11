@@ -3,7 +3,7 @@ This module contains functions for loading data from various file formats.
 It includes functions for loading data from JSON, YAML, TOML and INI files. 
 Each function takes an input that holds a reference to the serialized data,
 then it parses the data, and returns a Python dictionary. By default,
-serial_weaver finds which loader to use automatically based on the file
+SerialBus finds which loader to use automatically based on the file
 extension through utils.load_file_to_dict() function. If the file format is
 not supported, an UnsupportedFileFormatError is raised.
 

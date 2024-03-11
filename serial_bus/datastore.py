@@ -3,15 +3,15 @@ from collections import defaultdict
 from functools import cache
 from typing import TYPE_CHECKING, Any, DefaultDict, Dict, Optional, Type, Union
 
-from serial_weaver.custom_collections import SerialWeaverSortedSet
-from serial_weaver.exceptions import (
+from serial_bus.custom_collections import SerialBusSortedSet
+from serial_bus.exceptions import (
     DataStoreDirectAssignmentError,
     ModelAlreadyExistsError,
     ModelDoesNotExistError,
 )
 
 if TYPE_CHECKING:
-    from serial_weaver.models import SerialWeaverBaseModel
+    from serial_bus.models import SerialBusBaseModel
 
 
 class ModelsGlobalStore:
@@ -19,15 +19,15 @@ class ModelsGlobalStore:
     Implements a global store for all the models in the application.
 
     Models are stored in a defaultdict, where the keys are the model
-    classes names and the values are SerialWeaverSortedSet objects.
+    classes names and the values are SerialBusSortedSet objects.
 
-    The SerialWeaverSortedSet is a custom collection that stores the
+    The SerialBusSortedSet is a custom collection that stores the
     models in a sorted order, based on the `key` attribute of the model.
 
     An example of how the structure looks like:
     {
-        "Model1": SerialWeaverSortedSet([Model1_instance1, Model1_instance2, ...]),
-        "Model2": SerialWeaverSortedSet([Model2_instance1, Model2_instance2, ...]),
+        "Model1": SerialBusSortedSet([Model1_instance1, Model1_instance2, ...]),
+        "Model2": SerialBusSortedSet([Model2_instance1, Model2_instance2, ...]),
         ...
     }
 
@@ -37,12 +37,12 @@ class ModelsGlobalStore:
     application. See the `get_global_data_store` function for more details.
     """
 
-    _records = defaultdict(SerialWeaverSortedSet)
+    _records = defaultdict(SerialBusSortedSet)
 
     @property
     def records(
         self,
-    ) -> DefaultDict[str, SerialWeaverSortedSet]:
+    ) -> DefaultDict[str, SerialBusSortedSet]:
         return self._records
 
     @records.setter
@@ -66,17 +66,17 @@ class ModelsGlobalStore:
 
         return dump
 
-    def save(self, obj: "SerialWeaverBaseModel") -> None:
+    def save(self, obj: "SerialBusBaseModel") -> None:
         """
         Saves a model instance to the global store.
 
         If a key matching the object's class name is not in self.records, it will
         be added to the store and the model instance will be added to the
-        SerialWeaverSortedSet associated with that key.Otherwise, the model
+        SerialBusSortedSet associated with that key.Otherwise, the model
         instance will be added to the existing obj.__class__ key.
 
         Args:
-            obj (SerialWeaverBaseModel): the SerialWeaverBaseModel instance to be saved.
+            obj (SerialBusBaseModel): the SerialBusBaseModel instance to be saved.
 
         Raises:
             ModelAlreadyExists: if the model instance is already in the store
@@ -92,12 +92,12 @@ class ModelsGlobalStore:
 
         self.records[cls_name].add(obj)
 
-    def _get_cls_name(self, obj: Union[Type["SerialWeaverBaseModel"], "SerialWeaverBaseModel"]) -> str:
+    def _get_cls_name(self, obj: Union[Type["SerialBusBaseModel"], "SerialBusBaseModel"]) -> str:
         """
         Returns the name of the class of the given object.
 
         Args:
-            obj (Union[Type["SerialWeaverBaseModel"], "SerialWeaverBaseModel"]): could be 
+            obj (Union[Type["SerialBusBaseModel"], "SerialBusBaseModel"]): could be 
             either a class object or an instance of a class.
 
         Returns:
@@ -110,23 +110,23 @@ class ModelsGlobalStore:
 
     def _search(
         self,
-        model_class: Type["SerialWeaverBaseModel"],
+        model_class: Type["SerialBusBaseModel"],
         search_params: Optional[Dict[Any, Any]] = None,
-    ) -> SerialWeaverSortedSet:
+    ) -> SerialBusSortedSet:
         """
         Searches the records of a given model class based on the search_params.
         Currently, only one k:v pair is supported in the search_params.
 
         Args:
-            model_class (Type["SerialWeaverBaseModel"]): the class of the model to
+            model_class (Type["SerialBusBaseModel"]): the class of the model to
             be searched. 
             search_params (Optional[Dict[Any, Any]], optional): a single k:v pair
             dictionary with the key being the attribute of the model and the value
             being the value to be searched for. If None, returns the entire
-            SerialWeaverSortedSet associated with model_class key. Defaults to None.
+            SerialBusSortedSet associated with model_class key. Defaults to None.
 
         Returns:
-            SerialWeaverSortedSet: the SerialWeaverSortedSet containing the records
+            SerialBusSortedSet: the SerialBusSortedSet containing the records
             that match the search_params.
         """
         cls_name = self._get_cls_name(model_class)
@@ -134,7 +134,7 @@ class ModelsGlobalStore:
         if search_params:
             # we only take the first k,v pair from search_params
             search_k, value = list(search_params.items())[0]
-            return SerialWeaverSortedSet(
+            return SerialBusSortedSet(
                 [x for x in self.records[cls_name] if getattr(x, search_k) == value]
             )
 
@@ -142,31 +142,31 @@ class ModelsGlobalStore:
 
     def filter(
         self,
-        model_class: Type["SerialWeaverBaseModel"],
+        model_class: Type["SerialBusBaseModel"],
         search_params: Dict[Any, Any],
-    ) -> SerialWeaverSortedSet:
+    ) -> SerialBusSortedSet:
         """
         Avails of self._search() to filter the records of a given model class
         based on the search_params. Currently, only one k:v pair is supported
         in the search_params.
 
         Args:
-            model_class (Type["SerialWeaverBaseModel"]): the class of the
+            model_class (Type["SerialBusBaseModel"]): the class of the
             model to be filtered.
             search_params (Dict[Any, Any]): the search parameters to be used
             to filter the records.
 
         Returns:
-            SerialWeaverSortedSet: the SerialWeaverSortedSet containing
+            SerialBusSortedSet: the SerialBusSortedSet containing
             the records that match the search_params.
         """
         return self._search(model_class, search_params)
 
     def get(
         self,
-        model_class: Type["SerialWeaverBaseModel"],
+        model_class: Type["SerialBusBaseModel"],
         search_params: Dict[Any, Any],
-    ) -> "SerialWeaverBaseModel":
+    ) -> "SerialBusBaseModel":
         """
         Avails of self.filter() method to get a single model instance from
         the global store based on the search_params.
@@ -174,19 +174,19 @@ class ModelsGlobalStore:
         Currently, only one k:v pair is supported in the search_params.
 
         Args:
-            model_class (Type["SerialWeaverBaseModel"]): the class of the model
+            model_class (Type["SerialBusBaseModel"]): the class of the model
             to be filtered.
             search_params (Dict[Any, Any]): the search parameters to be used
             to filter the records.
 
         Raises:
-            ModelDoesNotExist: if a SerialWeaverBaseModel does not exist in
+            ModelDoesNotExist: if a SerialBusBaseModel does not exist in
             the datastore matching the search_params.
-            ModelAlreadyExists: if more than one SerialWeaverBaseModel exists
+            ModelAlreadyExists: if more than one SerialBusBaseModel exists
             in the datastore matching the search_params.
 
         Returns:
-            SerialWeaverBaseModel: a single SerialWeaverBaseModel instance.
+            SerialBusBaseModel: a single SerialBusBaseModel instance.
         """
         search = self.filter(model_class, search_params)
 
@@ -201,17 +201,17 @@ class ModelsGlobalStore:
         return search[0]
 
     def get_all_by_class(
-        self, model_class: Type["SerialWeaverBaseModel"]
-    ) -> SerialWeaverSortedSet:
+        self, model_class: Type["SerialBusBaseModel"]
+    ) -> SerialBusSortedSet:
         """
         Avails of self._search() method to get all the records of a given
         model class from the global store.
 
         Args:
-            model_class (Type["SerialWeaverBaseModel"]): the class of the model
+            model_class (Type["SerialBusBaseModel"]): the class of the model
 
         Returns:
-            SerialWeaverSortedSet: the SerialWeaverSortedSet containing all the
+            SerialBusSortedSet: the SerialBusSortedSet containing all the
             records of the given model class.
         """
         return self._search(model_class)

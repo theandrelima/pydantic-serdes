@@ -4,7 +4,7 @@ import os
 from types import ModuleType
 from typing import List, Dict, Type
 
-from serial_weaver.exceptions import SerialWeaverImportError
+from serial_bus.exceptions import SerialBusImportError
 
 # Below, we define the default values for the environment variables that
 # will be used to configure the package. If the user wants to override these
@@ -15,21 +15,21 @@ from serial_weaver.exceptions import SerialWeaverImportError
 TEMPLATES_DIR = "templates"
 
 # The python dotted path to the class used for creating hashable dictionaries
-HASHABLE_DICT_CLS = "serial_weaver.custom_collections.HashableDict"
+HASHABLE_DICT_CLS = "serial_bus.custom_collections.HashableDict"
 
 # The python dotted path to the module the provides loader functions
-LOADERS_MODULE = "serial_weaver.loaders"
+LOADERS_MODULE = "serial_bus.loaders"
 
 # The python dotted path to the module that provides dumper functions
-DUMPERS_MODULE = "serial_weaver.dumpers"
+DUMPERS_MODULE = "serial_bus.dumpers"
 
-# The python dotted paths to all modules that contain subclasses of SerialWeaverBaseModel
+# The python dotted paths to all modules that contain subclasses of SerialBusBaseModel
 # as an environment variable, it's a comma-separated string of dotted paths.
 # Example: "my_module1.models,my_module2.models"
-MODELS_MODULES = "serial_weaver.models"
+MODELS_MODULES = "serial_bus.models"
 
 
-class SerialWeaverConfig:
+class SerialBusConfig:
     """
     This class is used to hold the configuration of the package, which is
     determined by the environment variables.
@@ -57,7 +57,7 @@ class SerialWeaverConfig:
         try:
             loaders_module = importlib.import_module(self.loaders_module_path)
         except ImportError as err:
-            raise SerialWeaverImportError(err)
+            raise SerialBusImportError(err)
 
         return loaders_module
 
@@ -70,7 +70,7 @@ class SerialWeaverConfig:
         try:
             dumpers_module = importlib.import_module(self.dumpers_module_path)
         except ImportError as err:
-            raise SerialWeaverImportError(err)
+            raise SerialBusImportError(err)
 
         return dumpers_module
 
@@ -98,7 +98,7 @@ class SerialWeaverConfig:
     def directive_to_model_mapping(self) -> Dict[str, type]:
         """
         Returns a dictionary with the directive names as keys and the dotted paths
-        to the corresponding SerialWeaverBaseModel subclass as values.
+        to the corresponding SerialBusBaseModel subclass as values.
 
         Notice that this property returns self._directive_to_model_mapping, which will
         be set once and always return that same value. 
@@ -106,7 +106,7 @@ class SerialWeaverConfig:
         It's only if self._directive_to_model_mapping is empty that this method will
         try to populate it: 
             - 1st: by importing all modules in self.models_modules; and
-            - 2nd: by iterating over all subclasses of SerialWeaverBaseModel that 
+            - 2nd: by iterating over all subclasses of SerialBusBaseModel that 
               have the '_directive' field set.
         """
         if self._directive_to_model_mapping:
@@ -115,9 +115,9 @@ class SerialWeaverConfig:
         self._import_all_models_modules()
 
         # import here to avoid circular imports error
-        from serial_weaver.models import SerialWeaverBaseModel
+        from serial_bus.models import SerialBusBaseModel
 
-        for cls in SerialWeaverBaseModel.get_subclasses_with_directive():
+        for cls in SerialBusBaseModel.get_subclasses_with_directive():
             self._directive_to_model_mapping[cls._directive.get_default()] = cls
 
         return self._directive_to_model_mapping
@@ -125,20 +125,20 @@ class SerialWeaverConfig:
     def _import_all_models_modules(self) -> None:
         """
         By importing all models returned by self.models_modules, this method ensures
-        subclasses of SerialWeaverBaseModel are registered for discovery.
+        subclasses of SerialBusBaseModel are registered for discovery.
 
         Notice this method should be treated as private. Refrain from calling it
         directly, as it's called automatically by self.directive_to_model_mapping.
 
         Raises:
-            SerialWeaverImportError: If any of the modules in self.models_modules
+            SerialBusImportError: If any of the modules in self.models_modules
             cannot be imported.
         """
         for module in self.models_modules:
             try:
                 importlib.import_module(module)
             except ImportError as err:
-                raise SerialWeaverImportError(err)
+                raise SerialBusImportError(err)
 
 
 GLOBAL_CONFIGS = None
@@ -148,6 +148,6 @@ def get_config():
     global GLOBAL_CONFIGS
 
     if GLOBAL_CONFIGS is None:
-        GLOBAL_CONFIGS = SerialWeaverConfig()
+        GLOBAL_CONFIGS = SerialBusConfig()
 
     return GLOBAL_CONFIGS

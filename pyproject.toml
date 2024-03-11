@@ -1,13 +1,13 @@
 [tool.poetry]
-name = "serial_weaver"
+name = "serial_bus"
 version = "0.1.0"
-description = "A Python package that standardizes data parsing from multiple serilized formats into pydantic models."
+description = "A Python package that standardizes data parsing from multiple serialized formats into pydantic models."
 authors = ["André Lima"]
 documentation= "https://github.com/theandrelima/serial-weaver"
 keywords=["serialization", "deserialization", "parsing", "pydantic-models", "seria-to-pydantic", "pydantic-to-serial"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "serial_weaver"}]
+packages = [{include = "serial_bus"}]
 
 
 [tool.poetry.dependencies]

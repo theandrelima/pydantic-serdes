@@ -1,6 +1,6 @@
 # Usage
 
-The *WHAT*s and *HOW*s of Serial Weaver`s usage lays in the hands of the developer alone. That said, a few 
+The *WHAT*s and *HOW*s of SerialBus`s usage lays in the hands of the developer alone. That said, a few 
 hypothetical and intentionally contrived examples might help spark some ideas.
 
 >***NOTE**: The examples below are focused on sample code for some common use-cases. Little explanation is provided and 
@@ -38,45 +38,47 @@ products:
     category: sports
 ```
 
-Knowing our data, we can create model classes that inherit from SerialWeaverBaseModel.
+Knowing our data, we can create a model class that inherit from SerialBusBaseModel.
 > *Note the comments for some important information on special fields. More info on those can be found in [Base Models](/docs/base_models.md)*
 
 ```python
 # my_package/models.py
-1  from serial_weaver import SerialWeaverBaseModel
-2  
-3  class ProductModel(SerialWeaverBaseModel):
-4      _key = ("prod_id",)  # (mandatory) fields that should be used to uniquely ID a model instance.
-5      _directive = "products"  # (optional) yaml key that indicates data for instances of this model
-6      _err_on_duplicate = True  # (optional) if data leading to duplicates are present, should we error?
-7  
-8      prod_id: str
-9      name: str
-10     category: str
-11     # Product's specific behaviors coded as methods here
-12     # (...)
+1  from serial_bus import SerialBusBaseModel
+2
+3
+4  class ProductModel(SerialBusBaseModel):
+5
+6      _key = ("prod_id",)  # (mandatory) model fields that should be used to uniquely ID an instance.
+7      _directive = "products"  # (optional) the yaml keyword that holds data for instances of this model.
+8      _err_on_duplicate = True  # (optional) if data leading to duplicate instances is present, should we error?
+9
+10     prod_id: str
+11     name: str
+12     category: str
+13     # Product's specific behaviors coded as methods here
+14     # (...)
 ```
 
 With the data modeling done, we only need to load our models up.
 
 ```python
-1  import os
-2  from serial_weaver.utils import generate_from_file
-3  
-4  if __name__ == "__main__":
-5      # this makes sure serial_weaver will know where to look for model classes.
-6      # if your model classes are scattered through more than on module, make it a CSV str.
-7      os.environ["MODELS_MODULES"] = "my_package.models"
-8  
-9      # all the heavy-lifting happens here seamlessly.
-10     generate_from_file("products.yaml")
+1 import os
+2 from serial_bus.utils import generate_from_file
+3 
+4 if __name__ == "__main__":
+5     # this makes sure serial_bus will know where to look for model classes.
+6     # if your model classes are scattered through more than one module, make it a CSV str.
+7     os.environ["MODELS_MODULES"] = "my_package.models"
+8 
+9     # all the heavy-lifting happens seamlessly.
+10    generate_from_file("products.yaml")
 ```
 
-Except for the imports and the "main guard" we didn't have to do a lot to get instances of our CustomerModel. Let's 
+Except for the imports and the "*main* guard" we didn't have to do a lot to get instances of our CustomerModel. Let's 
 break down what's going on here:
 
-- line 7 sets the `MODELS_MODULES` environment variable which is an explicit way of informing Serial Weaver 
-  of where to look to find model classes that inherit from **SerialWeaverBaseModel**. There is an 
+- line 7 sets the `MODELS_MODULES` environment variable which is an explicit way of informing SerialBus 
+  of where to look to find model classes that inherit from **SerialBusBaseModel**. There is an 
   implicit way of doing the same explained in [Configuration & Extensibility](docs/configuration--extensibility.md). 
   ***Also, it's worth noting that this is typically something you would ensure to be set in your environment before the 
   code runs. It was done like this here for the sake of the example.***
@@ -94,65 +96,68 @@ same `my_package/main.py` file.
 # my_package/main.py
 11  import json
 12
-13  from serial_weaver import GLOBAL_DATA_STORE as datastore
+13  from serial_bus import GLOBAL_DATA_STORE as datastore
 14
 15  print(datastore.records)
 16  print(json.dumps(datastore.as_dict(), indent=4))
 ```
 
 As you might gather from the above code, [GLOBAL_DATA_STORE](/docs/the_global_data_store.md) is an object that holds 
-a `.records` property returning a data structure (defaultdict) with all our model instances, as we can see from the 
-print statement in line 14:
+a `.records` property returning a data structure (defaultdict) with all our model instances. SerialBus takes care of 
+automatically storing new model instances in the `GLOBAL_DATA_STORE` as they get created (*more info in 
+[SerialBusBaseModel](/docs/base_models.md#SerialBusBaseModel)*)
+
+We can see the contents of that defaultdict with the print statement from line 15:
 ```bash
-defaultdict(<class 'serial_weaver.custom_collections.SerialWeaverSortedSet'>, {'ProductModel': SerialWeaverSortedSet([ProductModel(prod_id='ABC123',
+defaultdict(<class 'serial_bus.custom_collections.SerialBusSortedSet'>, {'ProductModel': SerialBusSortedSet([ProductModel(prod_id='ABC123',
 name='Lembas', category='food'), ProductModel(prod_id='GHI789', name='There and Back Again', category='books'), ProductModel(prod_id='JKL012', name='Bow & Arrows',
 category='sports'), ProductModel(prod_id='MNO345', name='Mouth of Sauron - Live from The Black Gates', category='music'), ProductModel(prod_id='PQR678', name='Eagle
 Flight Tickets to Mordor', category='travel'), ProductModel(prod_id='VWX234', name='The Mazarbul-Book', category='books'), ProductModel(prod_id='YZA567',
-name='Dwarfs-tossing Gloves', category='sports')], key=<function SerialWeaverSortedSet.__init__.<locals>.<lambda> at 0x7fabd0e331f0>)})
+name='Dwarfs-tossing Gloves', category='sports')], key=<function SerialBusSortedSet.__init__.<locals>.<lambda> at 0x7fabd0e331f0>)})
 ```
 
 Defaultdicts are awesome, but not very readable. The `GLOBAL_DATA_STORE` object also has a `.as_dict()` method which 
-returns a regular dictionary with the same data, and that can be prettier printed using `json.dumps()` returned 
-string, as we did in line 15:
+returns a regular dictionary with the same data found in the `.records` property, and that can be prettier printed using
+`json.dumps()` returned string, as we did in line 16:
 ```bash
 {
-  "ProductModel": [
-    {
-        "prod_id": "ABC123",
-        "name": "Lembas",
-        "category": "food"
-    },
-    {
-        "prod_id": "GHI789",
-        "name": "There and Back Again",
-        "category": "books"
-    },
-    {
-        "prod_id": "JKL012",
-        "name": "Bow & Arrows",
-        "category": "sports"
-    },
-    {
-        "prod_id": "MNO345",
-        "name": "Mouth of Sauron - Live from The Black Gates",
-        "category": "music"
-    },
-    {
-        "prod_id": "PQR678",
-        "name": "Eagle Flight Tickets to Mordor",
-        "category": "travel"
-    },
-    {
-        "prod_id": "VWX234",
-        "name": "The Mazarbul-Book",
-        "category": "books"
-    },
-    {
-        "prod_id": "YZA567",
-        "name": "Dwarfs-tossing Gloves",
-        "category": "sports"
-    }
-  ]
+    "ProductModel": [
+        {
+            "prod_id": "ABC123",
+            "name": "Lembas",
+            "category": "food"
+        },
+        {
+            "prod_id": "GHI789",
+            "name": "There and Back Again",
+            "category": "books"
+        },
+        {
+            "prod_id": "JKL012",
+            "name": "Bow & Arrows",
+            "category": "sports"
+        },
+        {
+            "prod_id": "MNO345",
+            "name": "Mouth of Sauron - Live from The Black Gates",
+            "category": "music"
+        },
+        {
+            "prod_id": "PQR678",
+            "name": "Eagle Flight Tickets to Mordor",
+            "category": "travel"
+        },
+        {
+            "prod_id": "VWX234",
+            "name": "The Mazarbul-Book",
+            "category": "books"
+        },
+        {
+            "prod_id": "YZA567",
+            "name": "Dwarfs-tossing Gloves",
+            "category": "sports"
+        }
+    ]
 }
 ```
 
@@ -166,49 +171,49 @@ Just to make sure it's clear:
 ## Example 2: Data Relationship & Model Rendering
 
 Let's expand on Example 1 and throw customer data in the mix. To make things even a little more interesting (and to 
-prove the point that Serial Weaver can work seamlessly with multiple serialization formats), let's make it 
+prove the point that SerialBus can work seamlessly with multiple serialization formats), let's make it 
 through a separate *.json* file now:
 
 ```json
 # my_package/customers.json
 {
-  "customers": [
-    {
-      "name": "John Doe",
-      "age": 25,
-      "email": "john.doe@example.com",
-      "send_ads": true,
-      "flagged_interests": [
-        "sports",
-        "music"
-      ]
-    },
-    {
-      "name": "Jane Smith",
-      "age": 30,
-      "email": "jane.smith@example.com",
-      "send_ads": false,
-      "flagged_interests": [
-        "books"
-      ]
-    },
-    {
-      "name": "Alice Johnson",
-      "age": 35,
-      "email": "alice.johnson@example.com",
-      "send_ads": true,
-      "flagged_interests": [
-        "travel",
-        "food"
-      ]
-    }
-  ]
+    "customers": [
+        {
+            "name": "John Doe",
+            "age": 25,
+            "email": "john.doe@example.com",
+            "send_ads": true,
+            "flagged_interests": [
+                "sports",
+                "music"
+            ]
+        },
+        {
+            "name": "Jane Smith",
+            "age": 30,
+            "email": "jane.smith@example.com",
+            "send_ads": false,
+            "flagged_interests": [
+                "books"
+            ]
+        },
+        {
+            "name": "Alice Johnson",
+            "age": 35,
+            "email": "alice.johnson@example.com",
+            "send_ads": true,
+            "flagged_interests": [
+                "travel",
+                "food"
+            ]
+        }
+    ]
 }
 ```
 
 The field `flagged_interests` creates a relationship between products and customers, meaning that in our 
 `CustomerModel`, we will need to have a field that stores that 1:N relationship. Because a 
-`SerialWeaverBaseModel` class implements `__hashable__`, we have to do that by using a tuple object, since it is 
+`SerialBusBaseModel` class implements `__hashable__`, we have to do that by using a tuple object, since it is 
 python's only built-in hashable sequence type. You could use any other custom hashable sequence type you 
 might want to.
 
@@ -225,39 +230,38 @@ lines 2 to 4
 
 ```python
 # my_package/models.py
-17  from serial_weaver import SerialWeaverBaseModel
-18  from serial_weaver import SerialWeaverRenderableModel
-19  from pydantic import EmailStr, Field
-20  from typing import Tuple
-21  
-22  # class ProductModel(...)
-23  
-24  class CustomerModel(SerialWeaverRenderableModel):  # SerialWeaverRenderableModel is also a child class of SerialWeaverBaseModel
-25      _key = ("email",)
-26      _directive = "customers"
-27      _err_on_duplicate = True
-28      name: str
-29      age: int = Field(ge=18, le=100)
-30      email: EmailStr
-31      flagged_interests: Tuple[ProductModel, ...]
-32  
-33      @classmethod
-34      def create(cls, dict_args, *args, **kwargs):
-35          interests = list()
-36  
-37          for category in dict_args["flagged_interests"]:
-38              interests += [prod for prod in ProductModel.filter({"category": category})]
-39  
-40          # serial_weaver will take care of ultimately converting this to a tuple.
-41          dict_args["flagged_interests"] = interests
-42  
-43          super().create(dict_args, *args, **kwargs)
-44  
-45          # here come other methods for CustomerModel (...)
+1  from serial_bus import SerialBusBaseModel
+2  from serial_bus import SerialBusRenderableModel
+3  from pydantic import EmailStr, Field
+4  from typing import Tuple
+5
+6  class ProductModel:
+7  # (...) same as before
+
+21  class CustomerModel(SerialBusRenderableModel):  # SerialBusRenderableModel is also a child class of SerialBusBaseModel)
+22      _key = ("email",)
+23      _directive = "customers"
+24      _err_on_duplicate = True
+25      
+26      name: str
+27      age: int = Field(ge=18, le=100)
+28      email: EmailStr
+29      flagged_interests: Tuple[ProductModel, ...]
+30      
+31      @ classmethod
+32      def create(cls, dict_args, *args, **kwargs):
+33          interests = list()
+34          for category in dict_args["flagged_interests"]:
+35              interests += [prod for prod in ProductModel.filter({"category": category})]
+36          # serial_bus will take care of ultimately converting this to a tuple.
+37          dict_args["flagged_interests"] = interests
+38          super().create(dict_args, *args, **kwargs)
+39
+40      # here come other methods for CustomerModel (...)
 ```
 
-Before anything else, it's important to say that `SerialWeaverRenderableModel` also inherits from 
-`SerialWeaverBaseModel`. It merely extends it to include a template rendering functionality as we will see below.
+Before anything else, it's important to say that `SerialBusRenderableModel` also inherits from 
+`SerialBusBaseModel`. It merely extends it to include a template rendering functionality as we will see below.
 
 Now, let's focus on what's new here:
 - line 25 set the `flagged_interests` field to a Tuple of `ProductModel` instances. This is where the relationship 
@@ -275,10 +279,10 @@ Now, let's focus on what's new here:
 
 About step ii above, two things are worth noting:  
   1 - The query to our `GLOBAL_DATA_STORE` was actually carried out by the `.filter()` method that any child class 
-of `SerialWeaverBaseModel` will have. This method basically accepts a dictionary with one k:v pair that will 
+of `SerialBusBaseModel` will have. This method basically accepts a dictionary with one k:v pair that will 
 be used for the query. ***NOTE:** currently the query supports only one k:v pair.* For other querying options, 
-refer to [SerialWeaverBaseModel docs](/docs/base_models.md#SerialWeaverbasemodel).  
-  2 - even though we used a list object, child classes of `SerialWeaverBaseModel` are prepared to automatically 
+refer to [SerialBusBaseModel docs](/docs/base_models.md#SerialBusbasemodel).  
+  2 - even though we used a list object, child classes of `SerialBusBaseModel` are prepared to automatically 
 type cast an argument received as a list that is expected by a field of type Tuple.
 
 Finally, with our model ready to go, we just need to add another call to `.generate_from_file()` method in 
@@ -289,20 +293,20 @@ this:
 # my_package/main.py
 1  import os
 2  import json
-3  from serial_weaver import GLOBAL_DATA_STORE as datastore
-4  from serial_weaver.utils import generate_from_file
-5  
+3  from serial_bus import GLOBAL_DATA_STORE as datastore
+4  from serial_bus.utils import generate_from_file
+5
 6  if __name__ == "__main__":
-7      # this makes sure serial_weaver will know where to look for model classes.
-8      # if your model classes are scattered through more than on module, make it a CSV str.
-9      os.environ["MODELS_MODULES"] = "my_package.models"
-10 
-11     # all the heavy-lifting happens here seamlessly.
-12     generate_from_file("products.yaml")
-13     generate_from_file("customers.json")
-14 
-15     print(datastore.records)
-16     print(json.dumps(datastore.as_dict(), indent=4)) 
+7    # this makes sure serial_bus will know where to look for model classes.
+8    # if your model classes are scattered through more than on module, make it a CSV str.
+9    os.environ["MODELS_MODULES"] = "my_package.models"
+10
+11   # all the heavy-lifting happens here seamlessly.
+12   generate_from_file("products.yaml")
+13   generate_from_file("customers.json")
+14
+15   print(datastore.records)
+16   print(json.dumps(datastore.as_dict(), indent=4)) 
 ```
 
 Below is the output for line 16 only:
@@ -371,9 +375,9 @@ Below is the output for line 16 only:
 }
 ```
 
-**About the templating logic:** A `SerialWeaverRenderableModel` class by default expects to find a Jinja2 
+**About the templating logic:** A `SerialBusRenderableModel` class by default expects to find a Jinja2 
 template file under a default location with a default name (if none is given). For detailed information about these 
-defaults, refer to [SerialWeaverRenderableModel](/docs/base_models.md#SerialWeaverrenderablemodel).
+defaults, refer to [SerialBusRenderableModel](/docs/base_models.md#SerialBusrenderablemodel).
 
 In our case here all those defaults would lead our instances to expect to find the following jinja2 template file to 
 use when rendering their data into templates: `./templates/customer.j2`.
@@ -393,14 +397,14 @@ OBS: You are receiving this message in {{ email }} because you are registered fo
 ```
 
 To get the rendered string returned by the template, we only need to call the `.get_rendered_str()` method from a 
-`SerialWeaverRenderableModel`.
+`SerialBusRenderableModel`.
 
 For example:
 ```python
 for customer in CustomerModel.get_all():
-        print(f"Rendered template for customer: {customer.name}:")
-        print(customer.get_rendered_str() or "Customer doesn't have send_ads set to True")
-        print("-" * 50)
+    print(f"Rendered template for customer: {customer.name}:")
+    print(customer.get_rendered_str() or "Customer doesn't have send_ads set to True")
+    print("-" * 50)
 ```
 Output:
 ```bash
@@ -436,7 +440,7 @@ OBS: You are receiving this message in john.doe@example.com because you are regi
 
 ## Example 3: Converting data between supported formats
 
-A nice side effect of the features included with Serial Weaver, is that it can be used as an effective tool 
+A nice side effect of the features included with SerialBus, is that it can be used as an effective tool 
 for easily converting serialized data between any two supported formats, as long as the data types from the source 
 serialization format are also supported by the destination format.
 
@@ -444,16 +448,16 @@ Let's use the `customers.json` file we created in Example 2 above. The following
 to generate files of other formats:
 
 ```python
-1  from serial_weaver.utils import convert_src_file_to
-2  
-3  # converts src_file to YAML and saves it to a file named "yml_customers.yaml"
-4  convert_src_file_to(src_file="customers.json", dst_format="yaml", dst_file="yml_customers.yaml")
-5  
-6  # converts src_file to TOML and saves it to a file named "customers.toml"
-7  convert_src_file_to(src_file="customers.json", dst_format="toml")
-8  
-9  # raises SerialWeaverDumperError because the INI format doesn't support lists.
-10 convert_src_file_to(src_file="customers.json", dst_format="ini")
+1   from serial_bus.utils import convert_src_file_to
+2
+3   # converts src_file to YAML and saves it to a file named "yml_customers.yaml"
+4   convert_src_file_to(src_file="customers.json", dst_format="yaml", dst_file="yml_customers.yaml")
+5
+6   # converts src_file to TOML and saves it to a file named "customers.toml"
+7   convert_src_file_to(src_file="customers.json", dst_format="toml")
+8
+9   # raises SerialBusDumperError because the INI format doesn't support lists.
+10  convert_src_file_to(src_file="customers.json", dst_format="ini")
 ```
 
 The `convert_src_file_to` function needs only to know: 
@@ -466,7 +470,7 @@ Notice that for this use-case of simply converting from one format to another, t
 defined. 
 
 As it was the case when loading serialized data from a file into models, we don't really need to tell 
-Serial Weaver what's the serialization format of the source file, as it will automatically infer by the file 
+SerialBus what's the serialization format of the source file, as it will automatically infer by the file 
 suffix itself. So make sure your source file adheres to the well-known
 file extensions:
 - YAML: .yaml or .yml
