@@ -1,9 +1,9 @@
 from typing import Tuple
 from pydantic import EmailStr, Field
-from serial_weaver.models import SerialWeaverBaseModel, SerialWeaverRenderableModel
+from serial_bus.models import SerialBusBaseModel, SerialBusRenderableModel
 
 
-class ProductModel(SerialWeaverBaseModel):
+class ProductModel(SerialBusBaseModel):
     _key = ("prod_id",)  # fields that should be used to uniquely ID a model instance
     _directive = "products"  # yaml key that indicates data for instances of this model
     _err_on_duplicate = True  # if data leading to duplicates are present, should we error?
@@ -13,7 +13,7 @@ class ProductModel(SerialWeaverBaseModel):
     category: str
 
 
-class CustomerModel(SerialWeaverRenderableModel):
+class CustomerModel(SerialBusRenderableModel):
     _key = ("email",)
     _directive = "customers"
     _err_on_duplicate = True
@@ -31,7 +31,7 @@ class CustomerModel(SerialWeaverRenderableModel):
         for category in dict_args["flagged_interests"]:
             interests += [prod for prod in ProductModel.filter({"category": category})]
 
-        # serial_weaver will take care of ultimately converting this to a tuple.
+        # serial_bus will take care of ultimately converting this to a tuple.
         dict_args["flagged_interests"] = interests
 
         super().create(dict_args, *args, **kwargs)
