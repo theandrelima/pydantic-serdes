@@ -63,6 +63,8 @@ Here's a breakdown of its attributes and methods:
 
 
 In summary, `ModelsGlobalStore` provides a global, sorted store for models. It provides methods to add models to the 
-store, and to search for and retrieve models from the store based on their attributes. The store is implemented as a 
-defaultdict of `SerialBusSortedSet` objects, ensuring that each set of models of the same class is kept in 
-sorted order.
+store, and to search for and retrieve models from the store based on their attributes. 
+
+**Users are encouraged to examine [custom_collections.py](/serial_bus/custom_collections.py) code, where `HashableDict`
+and `SerialBusSortedSet` are, as well as [datastore.py](/serial_bus/datastore.py), where the `ModelsGlobalStore` is 
+implemented. Those are fairly well documented modules and more information can be found looking docstrings available.**
