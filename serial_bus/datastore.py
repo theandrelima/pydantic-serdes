@@ -6,8 +6,9 @@ from typing import TYPE_CHECKING, Any, DefaultDict, Dict, Optional, Type, Union
 from serial_bus.custom_collections import SerialBusSortedSet
 from serial_bus.exceptions import (
     DataStoreDirectAssignmentError,
-    ModelAlreadyExistsError,
-    ModelDoesNotExistError,
+    ModelInstanceAlreadyExistsError,
+    ModelInstanceDoesNotExistError,
+    MultipleModelInstancesReturnedError,
 )
 
 if TYPE_CHECKING:
@@ -85,7 +86,7 @@ class ModelsGlobalStore:
         cls_name = self._get_cls_name(obj)
 
         if obj in self.records[cls_name] and obj._err_on_duplicate:
-            raise ModelAlreadyExistsError(
+            raise ModelInstanceAlreadyExistsError(
                 f"{cls_name}: duplicates not allowed. Make sure there's no other "
                 f"{cls_name} with fields {obj._key} associated with values {obj.key}, respectively."
             )
@@ -191,12 +192,12 @@ class ModelsGlobalStore:
         search = self.filter(model_class, search_params)
 
         if not search:
-            raise ModelDoesNotExistError(
+            raise ModelInstanceDoesNotExistError(
                 f"A {model_class.__name__} object was not found matching params: {search_params}"
             )
 
         if len(search) > 1:
-            raise ModelAlreadyExistsError("More than one element found")
+            raise MultipleModelInstancesReturnedError("More than one element found")
 
         return search[0]
 

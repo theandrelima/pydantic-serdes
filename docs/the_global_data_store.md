@@ -40,7 +40,7 @@ Here's a breakdown of its attributes and methods:
   list of the results of calling `pydantic.BaseModel.model_dump()` on each record in the value.
 
 - `save(obj)`: This method saves a model instance to the global store. It first checks if the object is already in 
-  the store and raises a `ModelAlreadyExistsError` if it is and the object's `_err_on_duplicate` attribute is True. 
+  the store and raises a `ModelInstanceAlreadyExistsError` if it is and the object's `_err_on_duplicate` attribute is True. 
   Otherwise, it adds the object to the appropriate `SerialBusSortedSet` in `_record` defaultdict.
 
 - `_get_cls_name(obj)`: This private method returns the object's class name. It checks if the object is a class or 
@@ -55,8 +55,8 @@ Here's a breakdown of its attributes and methods:
   based on the search_params and returns the result.
 
 - `get(model_class, search_params)`: This method uses `filter()` to get a single model instance from the global store 
-  based on the search_params. It raises a `ModelDoesNotExistError` if no matching model is found, and a 
-  `ModelAlreadyExistsError` if more than one matching model is found.
+  based on the search_params. It raises a `ModelInstanceDoesNotExistError` if no matching model is found, and a 
+  `MultipleModelInstancesReturnedError` if more than one matching model is found.
 
 - `get_all_by_class(model_class)`: This method uses `_search()` to get all the records of a given model class from 
   the global store. It does not require any search parameters. 

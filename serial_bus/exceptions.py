@@ -25,12 +25,15 @@ class RenderableTemplateError(SerialBusBaseException):
     """An error occurred while trying to render a RenderableSerialBusModel"""
 
 
-class ModelDoesNotExistError(SerialBusBaseException):
+class ModelInstanceDoesNotExistError(SerialBusBaseException):
     """The model does not exist in the datastore."""
 
 
-class ModelAlreadyExistsError(SerialBusBaseException):
+class ModelInstanceAlreadyExistsError(SerialBusBaseException):
     """Model already exists in the datastore."""
+
+class MultipleModelInstancesReturnedError(SerialBusBaseException):
+    """More than one model instance found in the datastore matching search criteria, when only one should."""
 
 
 class DataStoreDirectAssignmentError(SerialBusBaseException):
