@@ -1,7 +1,7 @@
 # SerialBus Loaders
-Loader functions play a crucial role in the SerialBus by enabling the conversion of serialized 
-data into Python dictionaries, which can then be used to create instances of SerialBus models. The process 
-works as follows:  
+Loader functions play a crucial role in the SerialBus by enabling the conversion of serialized data into Python 
+dictionaries, which can then be used to create instances of SerialBus model instances. The process works as follows:
+  
  - The loader function reads serialized data from a source, which could be a file or a TextIO object. 
 
 
@@ -50,9 +50,9 @@ automatic loader selection) some conditions have to be met:
   dictionary.
 
 
-- the function(s) should be placed in a module, and the module's dotted path should be set in the `LOADERS_MODULE` 
+- the function(s) must be placed in a single module, and the module's dotted path must be set in the `LOADERS_MODULE` 
   environment variable. For example, if your project's package is named 'my_package' and you created custom loader 
-  function(s) in a module named 'my_loaders.py' you should set the `LOADERS_MODULE` environment variable to 
+  function(s) in a module named 'my_loaders.py', then you should set the `LOADERS_MODULE` environment variable to 
   `my_package.my_loaders`.
 
 Users are encouraged to look at [loaders.py](/serial_bus/loaders.py) to get an idea of how a loader function 
