@@ -54,4 +54,4 @@ to the documentation below.
 - [The GLOBAL_DATA_STORE](/docs/the_global_data_store.md)
 - [Loaders](/docs/loaders.md)
 - [Dumpers](/docs/dumpers.md)
-- [Contributing](#contributing)
+- [Contributing](/docs/contributing.md)
