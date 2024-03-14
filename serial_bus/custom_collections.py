@@ -11,8 +11,8 @@ class HashableDict(dict):
     fields that have to be dicts.
 
     Optionally, a code using SerialBus may use its own implementation of a
-    hashable dictionary through 'HASHABLE_DICT_MODULE' and 'HASHABLE_DICT_CLASS'
-    environment variables. See serial_bus.config.SerialBusConfig
+    hashable dictionary by informing it using the 'HASHABLE_DICT_CLS'
+    environment variable. See serial_bus.config.SerialBusConfig
     class for more details.
 
     NOTE: The requirement for a hashable dictionary is due to the fact that each
