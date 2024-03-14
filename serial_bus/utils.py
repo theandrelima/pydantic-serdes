@@ -1,11 +1,6 @@
 import importlib
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional, Type, TypeVar, Union
-
-# This module is where the 'HashableDict' will be used the most.
-# Hence, we import it here and in serial_bus.__init__.py we import
-# it from here. Other modules, including client code, should always do
-# 'from serial_bus import HashableDict'.
 from serial_bus.config import get_config
 from serial_bus.exceptions import (
     SerialBusImportError,
@@ -14,6 +9,11 @@ from serial_bus.exceptions import (
 )
 
 GLOBAL_CONFIGS = get_config()
+
+# This module is where the 'HashableDict' will be used the most.
+# Hence, we import it here and in serial_bus.__init__.py we import
+# it from here. Other modules, including client code, should always do
+# 'from serial_bus import HashableDict'.
 _module, _, _cls = GLOBAL_CONFIGS.hashable_dict_cls.rpartition(".")
 try:
     hashable_dict_module = importlib.import_module(_module)
