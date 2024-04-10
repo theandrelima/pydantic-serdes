@@ -40,18 +40,18 @@ to the documentation below.
 
 
 <p align="center">
-  <img src="/docs/images/serial_bus.png" alt="SerialBus" width="300"/>
+  <img src="https://github.com/theandrelima/serial_bus/blob/main/docs/images/serial_bus.png" alt="SerialBus" width="300"/>
 </p>
 
 
 ## Quick Start
-  - [Usage examples](/docs/getting_started.md#usage):
-    - [Example 1: Instantiating models from serialized data](/docs/getting_started.md#example-1-instantiating-models-from-serialized-data)
-    - [Example 2: Data Relationship & Model Rendering](/docs/getting_started.md#example-2-data-relationship--model-rendering)
-    - [Example 3: Converting data between supported formats](/docs/getting_started.md#example-3-converting-data-between-supported-formats)
-  - [Configuration & Extensibility](docs/configuration-and-extensibility.md)
-- [SerialBus Base Models](/docs/base_models.md)
-- [The GLOBAL_DATA_STORE](/docs/the_global_data_store.md)
-- [Loaders](/docs/loaders.md)
-- [Dumpers](/docs/dumpers.md)
-- [Contributing](/docs/contributing.md)
+  - [Usage examples](https://github.com/theandrelima/serial_bus/blob/main/docs/getting_started.md#usage):
+    - [Example 1: Instantiating models from serialized data](https://github.com/theandrelima/serial_bus/blob/main/docs/getting_started.md#example-1-instantiating-models-from-serialized-data)
+    - [Example 2: Data Relationship & Model Rendering](https://github.com/theandrelima/serial_bus/blob/main/docs/getting_started.md#example-2-data-relationship--model-rendering)
+    - [Example 3: Converting data between supported formats](https://github.com/theandrelima/serial_bus/blob/main/docs/getting_started.md#example-3-converting-data-between-supported-formats)
+  - [Configuration & Extensibility](https://github.com/theandrelima/serial_bus/blob/main/docs/configuration-and-extensibility.md)
+- [SerialBus Base Models](https://github.com/theandrelima/serial_bus/blob/main/docs/base_models.md)
+- [The GLOBAL_DATA_STORE](https://github.com/theandrelima/serial_bus/blob/main/docs/the_global_data_store.md)
+- [Loaders](https://github.com/theandrelima/serial_bus/blob/main/docs/loaders.md)
+- [Dumpers](https://github.com/theandrelima/serial_bus/blob/main/docs/dumpers.md)
+- [Contributing](https://github.com/theandrelima/serial_bus/blob/main/docs/contributing.md)
