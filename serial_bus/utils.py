@@ -93,31 +93,33 @@ def load_file_to_dict(file_path: Union[str, Path]) -> dict:
 def convert_src_file_to(
     src_file: Union[str, Path],
     dst_format: str,
+    save_to_file: Optional[bool] = True,
     dst_file: Optional[Union[str, Path]] = None,
     *args,
     **kwargs,
 ) -> None:
     """
-    TODO: change this function behavior to OPTIONALLY save the converted data to a file.
     Converts a serialized file to another format. Saves the content of
     converted data to a file and also returns the converted data as a string.
-
 
     Args:
         src_file (str, Path): the path to the file to be converted. Can be either
         a string or a Path object.
         dst_format (str): the format to which the file will be converted.
-        dst_file (Optional[Path], optional): the path to the output file. If not
+        save_to_file (Optional[bool]): If True, the converted data will be
+        saved to a file. Defaults to True to keep compatibility with the original
+        implementation of this method.
+        dst_file (Optional[str, Path]): the path to the output file. If not
         provided, the output will be written to a file with the same name as the input
         file, but with the new extension. Defaults to None.
 
-        additional arguments and keyword arguments will be passed to the dumper
+        Any additional arguments and keyword arguments will be passed to the dumper
         function.
 
     Raises:
         UnsupportedFileFormatError: If the src_file format is not supported.
-        SerialBusImportError: If either a loader of dumper function
-        can't be found for the src_file format or dst_format respectively.
+        SerialBusImportError: If a loader of dumper function can't be found
+        for the dst_format respectively.
     """
     if isinstance(src_file, str):
         src_file = Path(src_file)
@@ -134,7 +136,10 @@ def convert_src_file_to(
             f"Could not find a dumper function with name {dst_format}_dumper"
         )
 
-    dst_file = dst_file or src_file.with_suffix(f".{dst_format}")
+    if not save_to_file:
+        dst_file = None
+    else:
+        dst_file = dst_file or src_file.with_suffix(f".{dst_format}")
 
     return dumper_function(loaded_dict, dst_file, *args, **kwargs)
 
