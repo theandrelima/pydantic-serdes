@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "serial_bus"
-version = "0.1.0"
+version = "0.2.0"
 description = "A Python package that standardizes data parsing from multiple serialized formats into pydantic models."
 authors = ["André Lima"]
 documentation= "https://github.com/theandrelima/serial_bus"
