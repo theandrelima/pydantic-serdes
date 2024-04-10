@@ -120,11 +120,11 @@ class ModelsGlobalStore:
 
         Args:
             model_class (Type["SerialBusBaseModel"]): the class of the model to
-            be searched. 
-            search_params (Optional[Dict[Any, Any]], optional): a single k:v pair
-            dictionary with the key being the attribute of the model and the value
-            being the value to be searched for. If None, returns the entire
-            SerialBusSortedSet associated with model_class key. Defaults to None.
+            be searched.
+            search_params (Optional[Dict[Any, Any]], optional): a dictionary with
+            keys being the attributes of the model and the values being the values
+            to be searched for. If `None`, returns the entire SerialBusSortedSet
+            associated with `model_class` key. Defaults to None.
 
         Returns:
             SerialBusSortedSet: the SerialBusSortedSet containing the records
@@ -133,10 +133,8 @@ class ModelsGlobalStore:
         cls_name = self._get_cls_name(model_class)
 
         if search_params:
-            # we only take the first k,v pair from search_params
-            search_k, value = list(search_params.items())[0]
             return SerialBusSortedSet(
-                [x for x in self.records[cls_name] if getattr(x, search_k) == value]
+                [x for x in self.records[cls_name] if all(getattr(x, k) == v for k, v in search_params.items())]
             )
 
         return self.records[cls_name]
