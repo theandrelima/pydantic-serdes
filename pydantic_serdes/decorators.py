@@ -9,16 +9,26 @@ from pydantic_serdes.exceptions import PydanticSerdesDumperError
 
 
 def onetomany_validators(cls):
-    # Iterate over the class's annotations
+    """
+    A decorator that adds field validators to a class for fields of type OneToMany.
+
+    This decorator iterates over the class's annotations, checking for fields that are of type OneToMany.
+    For each OneToMany field, it defines a validator function that checks if all items in the field are instances
+    of the expected type. If not, it raises a TypeError. This validator function is then added to the class
+    using the `field_validator` function from Pydantic.
+
+    Args:
+        cls (type): The class to which the validators will be added.
+
+    Returns:
+        type: The input class with added validators for OneToMany fields.
+
+    Raises:
+        TypeError: If any item in a OneToMany field is not an instance of the expected type.
+    """
     for field_name, field_type in cls.__annotations__.items():
-        # Check if the field is a OneToMany field
         if getattr(field_type, "__origin__", None) is OneToMany:
-            # If it is, add a validator for this field
-
-            # Get the expected type of the elements
             expected_type = field_type.__args__[0]
-
-            # Define the validator function
             def onetomany_validator(cls, v):
                 if not all(isinstance(item, expected_type) for item in v):
                     raise TypeError(
@@ -26,7 +36,6 @@ def onetomany_validators(cls):
                     )
                 return v
 
-            # Add the validator to the class
             setattr(
                 cls,
                 f"validate_{field_name}",
@@ -75,17 +84,6 @@ def stream_dumper(dump_func: Callable[..., None]):
 
 
 def stream_loader(load_func: Callable[..., Dict]):
-    """
-    This decorator wraps a loader function to allow it to handle different types of input sources.
-
-    Args:
-        load_func (Callable[..., Dict]): The function that will be used to load and parse the data.
-        This function should take a TextIO object as its first argument, which represents the stream of data to be
-        loaded.
-        It may also accept additional arguments, which will be passed through from the `standard_loader_func`.
-        The function should return a dictionary representing the parsed data.
-    """
-
     def standard_loader_func(source: Union[Path, str, TextIO], *args, **kwargs) -> dict:
         """
         This decorator wraps a loader function to allow it to handle different types of input sources.
