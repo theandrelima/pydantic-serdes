@@ -1,5 +1,4 @@
 import re
-from functools import total_ordering
 from typing import Any, Dict, List, Optional, Tuple, Union, ClassVar
 from collections.abc import Iterable
 
@@ -23,8 +22,6 @@ from pydantic_serdes.utils import convert_dict_to_hashabledict
 
 GLOBAL_CONFIGS = get_config()
 
-
-@total_ordering
 class PydanticSerdesBaseModel(BaseModel):
     """A pydantic BaseModel class that provides the basic
     functionality for all pydantic-serdes Models classes.
@@ -32,9 +29,6 @@ class PydanticSerdesBaseModel(BaseModel):
     Any PydanticSerdesBaseModel child class SHOULD be instantiated from
     .create_from_loaded_data() or .create() class methods provided.
     Instantiation by using __init__() directly is discouraged.
-
-    This class implements functools.total_ordering to allow its instances
-    to be sorted accordingly inside a datastore.PydanticSerdesSortedSet.
 
     Because datastore.PydanticSerdesSortedSet is a python Set, all
     pydantic-serdes models MUST be hashable. This has a twofold consequence:
