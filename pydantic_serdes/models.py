@@ -6,6 +6,7 @@ from jinja2 import Environment, FileSystemLoader, Template
 from jinja2.exceptions import TemplateNotFound
 from pydantic import BaseModel, ConfigDict
 
+from pydantic_serdes.decorators import onetomany_validators
 from pydantic_serdes.custom_collections import OneToMany
 from pydantic_serdes.config import get_config
 from pydantic_serdes.datastore import (
@@ -77,6 +78,9 @@ class PydanticSerdesBaseModel(BaseModel):
         """Registers all subclasses of this class in the _subclasses attribute."""
         super().__init_subclass__(**kwargs)
         cls._subclasses.append(cls)
+
+        # Ensure 'onetomany_validators' decorator will be applied to all subclasses
+        onetomany_validators(cls)
 
     def __hash__(self):
         return hash((type(self),) + tuple(self.__dict__.values()))
