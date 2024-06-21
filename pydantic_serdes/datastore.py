@@ -3,8 +3,8 @@ from collections import defaultdict
 from functools import cache
 from typing import TYPE_CHECKING, Any, DefaultDict, Dict, Optional, Type, Union
 
-from serial_bus.custom_collections import SerialBusSortedSet
-from serial_bus.exceptions import (
+from pydantic_serdes.custom_collections import PydanticSerdesSortedSet
+from pydantic_serdes.exceptions import (
     DataStoreDirectAssignmentError,
     ModelInstanceAlreadyExistsError,
     ModelInstanceDoesNotExistError,
@@ -12,7 +12,7 @@ from serial_bus.exceptions import (
 )
 
 if TYPE_CHECKING:
-    from serial_bus.models import SerialBusBaseModel
+    from pydantic_serdes.models import PydanticSerdesBaseModel
 
 
 class ModelsGlobalStore:
@@ -20,15 +20,15 @@ class ModelsGlobalStore:
     Implements a global store for all the models in the application.
 
     Models are stored in a defaultdict, where the keys are the model
-    classes names and the values are SerialBusSortedSet objects.
+    classes names and the values are PydanticSerdesSortedSet objects.
 
-    The SerialBusSortedSet is a custom collection that stores the
+    The PydanticSerdesSortedSet is a custom collection that stores the
     models in a sorted order, based on the `key` attribute of the model.
 
     An example of how the structure looks like:
     {
-        "Model1": SerialBusSortedSet([Model1_instance1, Model1_instance2, ...]),
-        "Model2": SerialBusSortedSet([Model2_instance1, Model2_instance2, ...]),
+        "Model1": PydanticSerdesSortedSet([Model1_instance1, Model1_instance2, ...]),
+        "Model2": PydanticSerdesSortedSet([Model2_instance1, Model2_instance2, ...]),
         ...
     }
 
@@ -38,12 +38,12 @@ class ModelsGlobalStore:
     application. See the `get_global_data_store` function for more details.
     """
 
-    _records = defaultdict(SerialBusSortedSet)
+    _records = defaultdict(PydanticSerdesSortedSet)
 
     @property
     def records(
         self,
-    ) -> DefaultDict[str, SerialBusSortedSet]:
+    ) -> DefaultDict[str, PydanticSerdesSortedSet]:
         return self._records
 
     @records.setter
@@ -67,17 +67,17 @@ class ModelsGlobalStore:
 
         return dump
 
-    def save(self, obj: "SerialBusBaseModel") -> None:
+    def save(self, obj: "PydanticSerdesBaseModel") -> None:
         """
         Saves a model instance to the global store.
 
         If a key matching the object's class name is not in self.records, it will
         be added to the store and the model instance will be added to the
-        SerialBusSortedSet associated with that key.Otherwise, the model
+        PydanticSerdesSortedSet associated with that key.Otherwise, the model
         instance will be added to the existing obj.__class__ key.
 
         Args:
-            obj (SerialBusBaseModel): the SerialBusBaseModel instance to be saved.
+            obj (PydanticSerdesBaseModel): the PydanticSerdesBaseModel instance to be saved.
 
         Raises:
             ModelAlreadyExists: if the model instance is already in the store
@@ -93,12 +93,12 @@ class ModelsGlobalStore:
 
         self.records[cls_name].add(obj)
 
-    def _get_cls_name(self, obj: Union[Type["SerialBusBaseModel"], "SerialBusBaseModel"]) -> str:
+    def _get_cls_name(self, obj: Union[Type["PydanticSerdesBaseModel"], "PydanticSerdesBaseModel"]) -> str:
         """
         Returns the name of the class of the given object.
 
         Args:
-            obj (Union[Type["SerialBusBaseModel"], "SerialBusBaseModel"]): could be 
+            obj (Union[Type["PydanticSerdesBaseModel"], "PydanticSerdesBaseModel"]): could be
             either a class object or an instance of a class.
 
         Returns:
@@ -111,29 +111,29 @@ class ModelsGlobalStore:
 
     def _search(
         self,
-        model_class: Type["SerialBusBaseModel"],
+        model_class: Type["PydanticSerdesBaseModel"],
         search_params: Optional[Dict[Any, Any]] = None,
-    ) -> SerialBusSortedSet:
+    ) -> PydanticSerdesSortedSet:
         """
         Searches the records of a given model class based on the search_params.
         Currently, only one k:v pair is supported in the search_params.
 
         Args:
-            model_class (Type["SerialBusBaseModel"]): the class of the model to
+            model_class (Type["PydanticSerdesBaseModel"]): the class of the model to
             be searched.
             search_params (Optional[Dict[Any, Any]], optional): a dictionary with
             keys being the attributes of the model and the values being the values
-            to be searched for. If `None`, returns the entire SerialBusSortedSet
+            to be searched for. If `None`, returns the entire PydanticSerdesSortedSet
             associated with `model_class` key. Defaults to None.
 
         Returns:
-            SerialBusSortedSet: the SerialBusSortedSet containing the records
+            PydanticSerdesSortedSet: the PydanticSerdesSortedSet containing the records
             that match the search_params.
         """
         cls_name = self._get_cls_name(model_class)
 
         if search_params:
-            return SerialBusSortedSet(
+            return PydanticSerdesSortedSet(
                 [x for x in self.records[cls_name] if all(getattr(x, k) == v for k, v in search_params.items())]
             )
 
@@ -141,31 +141,31 @@ class ModelsGlobalStore:
 
     def filter(
         self,
-        model_class: Type["SerialBusBaseModel"],
+        model_class: Type["PydanticSerdesBaseModel"],
         search_params: Dict[Any, Any],
-    ) -> SerialBusSortedSet:
+    ) -> PydanticSerdesSortedSet:
         """
         Avails of self._search() to filter the records of a given model class
         based on the search_params. Currently, only one k:v pair is supported
         in the search_params.
 
         Args:
-            model_class (Type["SerialBusBaseModel"]): the class of the
+            model_class (Type["PydanticSerdesBaseModel"]): the class of the
             model to be filtered.
             search_params (Dict[Any, Any]): the search parameters to be used
             to filter the records.
 
         Returns:
-            SerialBusSortedSet: the SerialBusSortedSet containing
+            PydanticSerdesSortedSet: the PydanticSerdesSortedSet containing
             the records that match the search_params.
         """
         return self._search(model_class, search_params)
 
     def get(
         self,
-        model_class: Type["SerialBusBaseModel"],
+        model_class: Type["PydanticSerdesBaseModel"],
         search_params: Dict[Any, Any],
-    ) -> "SerialBusBaseModel":
+    ) -> "PydanticSerdesBaseModel":
         """
         Avails of self.filter() method to get a single model instance from
         the global store based on the search_params.
@@ -173,19 +173,19 @@ class ModelsGlobalStore:
         Currently, only one k:v pair is supported in the search_params.
 
         Args:
-            model_class (Type["SerialBusBaseModel"]): the class of the model
+            model_class (Type["PydanticSerdesBaseModel"]): the class of the model
             to be filtered.
             search_params (Dict[Any, Any]): the search parameters to be used
             to filter the records.
 
         Raises:
-            ModelDoesNotExist: if a SerialBusBaseModel does not exist in
+            ModelDoesNotExist: if a PydanticSerdesBaseModel does not exist in
             the datastore matching the search_params.
-            ModelAlreadyExists: if more than one SerialBusBaseModel exists
+            ModelAlreadyExists: if more than one PydanticSerdesBaseModel exists
             in the datastore matching the search_params.
 
         Returns:
-            SerialBusBaseModel: a single SerialBusBaseModel instance.
+            PydanticSerdesBaseModel: a single PydanticSerdesBaseModel instance.
         """
         search = self.filter(model_class, search_params)
 
@@ -200,17 +200,17 @@ class ModelsGlobalStore:
         return search[0]
 
     def get_all_by_class(
-        self, model_class: Type["SerialBusBaseModel"]
-    ) -> SerialBusSortedSet:
+        self, model_class: Type["PydanticSerdesBaseModel"]
+    ) -> PydanticSerdesSortedSet:
         """
         Avails of self._search() method to get all the records of a given
         model class from the global store.
 
         Args:
-            model_class (Type["SerialBusBaseModel"]): the class of the model
+            model_class (Type["PydanticSerdesBaseModel"]): the class of the model
 
         Returns:
-            SerialBusSortedSet: the SerialBusSortedSet containing all the
+            PydanticSerdesSortedSet: the PydanticSerdesSortedSet containing all the
             records of the given model class.
         """
         return self._search(model_class)

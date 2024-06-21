@@ -1,17 +1,17 @@
-# SerialBus Base Models
+# pydantic-serdes Base Models
 
-## [SerialBusBaseModel](/serial_bus/models.py)
+## [PydanticSerdesBaseModel](/pydantic_serdes/models.py)
 
->***Note**: The `SerialBusBaseModel` class is not meant to be directly instantiated. Instead, it should be
+>***Note**: The `PydanticSerdesBaseModel` class is not meant to be directly instantiated. Instead, it should be
 >subclassed to create model classes.*
 
-The `SerialBusBaseModel` class is a foundational class that provides a lot of functionality for managing 
+The `PydanticSerdesBaseModel` class is a foundational class that provides a lot of functionality for managing 
 model instances. It ensures that instances are created, stored, and retrieved in a controlled and efficient manner. 
-It extends Pydantic's `BaseModel` and adds several features to support SerialBus's functionality.
+It extends Pydantic's `BaseModel` and adds several features to support pydantic-serdes's functionality.
 
 Here is a high-level overview:
 
-- **Instantiation**: An attempt to directly instantiate a `SerialBusBaseModel` object will result in 
+- **Instantiation**: An attempt to directly instantiate a `PydanticSerdesBaseModel` object will result in 
   `ModelInitializationError`. Additionally, direct instantiation of subclasses is discouraged. Instead, users should
    avail of the `create_from_loaded_data()` factory method that allows creating instances of a subclass
    from a dict or a list of dicts. Leveraging this method ensures that all instances are created in a controlled
@@ -38,9 +38,9 @@ Here is a high-level overview:
   mapping of model classes to a 'directive' in the serialized data *(for more info on 'directive', keep reading).* 
 
 
-- **Model-to-Directives Mapping**: In the context of SerialBus, a 'directive' is a keyword in the 
+- **Model-to-Directives Mapping**: In the context of pydantic-serdes, a 'directive' is a keyword in the 
   serialized data that holds a value (either a list or another set of key:value pairs) representing one or more 
-  instances of models that should be created. `SerialBusBaseModel` defines an optional `_directive` attribute.
+  instances of models that should be created. `PydanticSerdesBaseModel` defines an optional `_directive` attribute.
   If a subclass chooses to include a value for this attribute, then the behavior will be to try and instantiate model 
   objects of that class for each element (be it one or several) nested under a keyword in the serialized data 
   matching the value of the `_directive` attribute. ***This is a powerful feature that allows for the automatic instantiation
@@ -49,28 +49,28 @@ Here is a high-level overview:
   would have to include custom logic to take care of that.
 
 
-- **Duplication Handling**: Because each instance of a subclass of `SerialBusBaseModel` will be stored in a 
+- **Duplication Handling**: Because each instance of a subclass of `PydanticSerdesBaseModel` will be stored in a 
   sorted set inside the GLOBAL_DATA_STORE, duplication is automatically never going to happen. The default behavior 
   when facing duplications will be the same as with Python's built-in set objects: silently ignore it. However, 
   setting `_error_on_duplicate` to True allows raising an error if an attempt is made to add a duplicate instance to
   the global data store.
 
-**Users are encouraged to examine [SerialBusBaseModel](/serial_bus/models.py) code. It is fairly well documented and more
+**Users are encouraged to examine [PydanticSerdesBaseModel](/pydantic_serdes/models.py) code. It is fairly well documented and more
 information can be found looking docstrings available.**
 
 ***
 
-## [SerialBusRenderableModel](/serial_bus/models.py)
-> ***Note**: The `SerialBusRenderableModel` class is not meant to be directly instantiated. Instead, it should
+## [PydanticSerdesRenderableModel](/pydantic_serdes/models.py)
+> ***Note**: The `PydanticSerdesRenderableModel` class is not meant to be directly instantiated. Instead, it should
 > be subclassed to create model classes.*
 
-The `SerialBusRenderableModel` class extends the `SerialBusBaseModel` and adds functionality for 
+The `PydanticSerdesRenderableModel` class extends the `PydanticSerdesBaseModel` and adds functionality for 
 rendering instances into strings using Jinja2 templates. This can be useful for a number of automation or reporting 
 tasks, where you need to generate text-based output based on the model data.
 
 Here's a high-level overview:
 
-- **Keeps all the good stuff**: `SerialBusRenderableModel` inherits from `SerialBusBaseModel`, so it 
+- **Keeps all the good stuff**: `PydanticSerdesRenderableModel` inherits from `PydanticSerdesBaseModel`, so it 
   has all the features of that class, including instantiation, ordering and hashing, keying, model-to-directives 
   mapping, and interaction with the global data store. 
 
@@ -95,5 +95,5 @@ Here's a high-level overview:
   present among the model's instance attributes) that will be expected by the template. This can be useful if you
   need to include data that is not part of the model instance.
 
-**Users are encouraged to examine [SerialBusRenderableModel](/serial_bus/models.py) code. It is fairly well documented and
+**Users are encouraged to examine [PydanticSerdesRenderableModel](/pydantic_serdes/models.py) code. It is fairly well documented and
 more information can be found looking docstrings available.**

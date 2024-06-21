@@ -6,8 +6,8 @@ import pytest
 # create any model instance, the `MODELS_MODULES` env var doesn't need
 # to be set.
 from tests.models import CustomerModel
-from serial_bus import GLOBAL_DATA_STORE as data_store
-from serial_bus.utils import generate_from_file, load_file_to_dict
+from pydantic_serdes import GLOBAL_DATA_STORE as data_store
+from pydantic_serdes.utils import generate_from_file, load_file_to_dict
 from tests.utils import get_customer_model_records_for_assertion, get_customer_data_for_assertion
 
 

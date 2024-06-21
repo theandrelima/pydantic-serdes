@@ -1,6 +1,6 @@
-# Contributing to SerialBus
+# Contributing to pydantic-serdes
 
-First off, thank you for considering contributing to SerialBus.
+First off, thank you for considering contributing to pydantic-serdes.
 
 If you've noticed a bug or have a feature request, make one! It's generally best if you get confirmation of your bug or approval for your feature request this way before starting to code.
 
