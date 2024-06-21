@@ -1,5 +1,5 @@
-from typing import Tuple
 from pydantic import EmailStr, Field
+from pydantic_serdes import OneToMany
 from pydantic_serdes.models import PydanticSerdesBaseModel, PydanticSerdesRenderableModel
 
 
@@ -22,7 +22,7 @@ class CustomerModel(PydanticSerdesRenderableModel):
     age: int = Field(ge=18, le=100)
     send_ads: bool
     email: EmailStr
-    flagged_interests: Tuple[ProductModel, ...]
+    flagged_interests: OneToMany[ProductModel, ...]
 
     @classmethod
     def create(cls, dict_args, *args, **kwargs):
@@ -31,7 +31,8 @@ class CustomerModel(PydanticSerdesRenderableModel):
         for category in dict_args["flagged_interests"]:
             interests += [prod for prod in ProductModel.filter({"category": category})]
 
-        # pydantic_serdes will take care of ultimately converting this to a tuple.
+        # even though `interestes` is a list object, pydantic_serdes will
+        # take care of ultimately converting this to a OneToMany object.
         dict_args["flagged_interests"] = interests
 
         super().create(dict_args, *args, **kwargs)
