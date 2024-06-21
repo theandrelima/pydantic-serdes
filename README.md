@@ -2,7 +2,7 @@
 
 pydantic-serdes is a Pydantic-based tool designed to act as a conduit between serialized data and Python objects. It 
 not only facilitates the transformation of complex serialized data into Python objects, but also ensures stringent
-data validation. Think of it as the coach that transports your data from the realm of serialization into the world
+data validation. Think of it as the wizard that transports your data from the realm of serialization into the world
 of Python, and vice-versa, all the while maintaining the integrity and structure of your data. 
 
 > *DISCLAMER*:
