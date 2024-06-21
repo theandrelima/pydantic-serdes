@@ -2,7 +2,7 @@ from collections.abc import Sequence
 from sortedcontainers import SortedSet
 from typing import Generic, TypeVar, Tuple
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class OneToMany(Tuple[T, ...], Generic[T]):
@@ -18,15 +18,20 @@ class OneToMany(Tuple[T, ...], Generic[T]):
     If any of these constraints are not met, the class raises an appropriate error.
 
     Raises:
-        TypeError: If the input is not a sequence, if the elements are not of the same type, or if an element is not hashable.
+        TypeError: If the input is not a sequence, if the elements are not of the same type, or if an element
+        is not hashable.
         ValueError: If the sequence is empty.
 
     Note:
-        This class uses the `__new__` method for initialization, following the immutability principle of the tuple superclass.
+        This class uses the `__new__` method for initialization, following the immutability principle of the
+        tuple superclass.
     """
+
     def __new__(cls, iterable):
         if not isinstance(iterable, Sequence):
-            raise TypeError(f"The OneToMany initialization iterable must be a sequence, but got {type(iterable).__name__}")
+            raise TypeError(
+                f"The OneToMany initialization iterable must be a sequence, but got {type(iterable).__name__}"
+            )
 
         # Check if the sequence is non-empty
         if not iterable:
@@ -35,14 +40,18 @@ class OneToMany(Tuple[T, ...], Generic[T]):
         # Check if all elements are of the same type
         first_type = type(iterable[0])
         if not all(isinstance(item, first_type) for item in iterable):
-            raise TypeError("All elements of a OneToMany initialization iterable must be of the same type")
+            raise TypeError(
+                "All elements of a OneToMany initialization iterable must be of the same type"
+            )
 
         # Check if each element in the sequence is hashable
         for item in iterable:
             try:
                 hash(item)
             except TypeError:
-                raise TypeError(f"Each element in the OneToMany initialization iterable must be hashable, but {item} isn't.")
+                raise TypeError(
+                    f"Each element in the OneToMany initialization iterable must be hashable, but {item} isn't."
+                )
 
         return super().__new__(cls, iterable)
 
@@ -71,7 +80,8 @@ class HashableDict(dict):
 
 
 class PydanticSerdesSortedSet(SortedSet):
-    """This class implements a custom SortedSet with the 'key' argument
+    """
+    This class implements a custom SortedSet with the 'key' argument
     set to a function that returns a model object's `key` property.
 
     NOTE: the `key` property returns a tuple containing the values associated
