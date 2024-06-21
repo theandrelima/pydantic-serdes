@@ -1,9 +1,8 @@
 from pydantic import EmailStr, Field
+
 from pydantic_serdes import OneToMany
-from pydantic_serdes.models import (
-    PydanticSerdesBaseModel,
-    PydanticSerdesRenderableModel,
-)
+from pydantic_serdes.models import (PydanticSerdesBaseModel,
+                                    PydanticSerdesRenderableModel)
 
 
 class ProductModel(PydanticSerdesBaseModel):

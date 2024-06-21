@@ -24,7 +24,7 @@ data itself. After parsing that data, your function must return a dictionary.
 import configparser
 import json
 from pathlib import Path
-from typing import Union, TextIO
+from typing import TextIO, Union
 
 import toml
 import yaml

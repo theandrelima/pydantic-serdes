@@ -1,8 +1,10 @@
 import os
+
 import pytest
-from pydantic_serdes.utils import convert_src_file_to
+
 from pydantic_serdes.config import get_config
 from pydantic_serdes.exceptions import PydanticSerdesDumperError
+from pydantic_serdes.utils import convert_src_file_to
 
 # Define the supported formats
 CONFIG = get_config()

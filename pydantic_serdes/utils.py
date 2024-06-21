@@ -1,12 +1,11 @@
 import importlib
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional, Type, TypeVar, Union
+
 from pydantic_serdes.config import get_config
-from pydantic_serdes.exceptions import (
-    PydanticSerdesImportError,
-    PydanticSerdesTypeError,
-    UnsupportedFileFormatError,
-)
+from pydantic_serdes.exceptions import (PydanticSerdesImportError,
+                                        PydanticSerdesTypeError,
+                                        UnsupportedFileFormatError)
 
 GLOBAL_CONFIGS = get_config()
 
