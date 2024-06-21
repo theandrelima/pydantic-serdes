@@ -2,7 +2,7 @@ import importlib
 import inspect
 import os
 from types import ModuleType
-from typing import List, Dict, Type
+from typing import Dict, List, Type
 
 from pydantic_serdes.exceptions import PydanticSerdesImportError
 

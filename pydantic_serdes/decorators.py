@@ -1,10 +1,11 @@
-from pydantic import field_validator
-from pydantic_serdes.custom_collections import OneToMany
-from typing import Callable, Dict, Any, Optional, Union
-from pathlib import Path
 import io
+from pathlib import Path
+from typing import Any, Callable, Dict, Optional, TextIO, Union
+
+from pydantic import field_validator
+
+from pydantic_serdes.custom_collections import OneToMany
 from pydantic_serdes.exceptions import PydanticSerdesDumperError
-from typing import TextIO
 
 
 def onetomany_validators(cls):

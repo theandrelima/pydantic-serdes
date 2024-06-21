@@ -1,17 +1,16 @@
 import os
+
 import pytest
 
+from pydantic_serdes import GLOBAL_DATA_STORE as data_store
+from pydantic_serdes.utils import generate_from_file, load_file_to_dict
 # Because one of the tests will need access to CustomerModel class,
 # it's imported here. And because it's imported before we ever try to
 # create any model instance, the `MODELS_MODULES` env var doesn't need
 # to be set.
 from tests.models import CustomerModel
-from pydantic_serdes import GLOBAL_DATA_STORE as data_store
-from pydantic_serdes.utils import generate_from_file, load_file_to_dict
-from tests.utils import (
-    get_customer_model_records_for_assertion,
-    get_customer_data_for_assertion,
-)
+from tests.utils import (get_customer_data_for_assertion,
+                         get_customer_model_records_for_assertion)
 
 
 ### FIXTURES ###

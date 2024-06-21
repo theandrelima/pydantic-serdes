@@ -1,6 +1,7 @@
 from collections.abc import Sequence
+from typing import Generic, Tuple, TypeVar
+
 from sortedcontainers import SortedSet
-from typing import Generic, TypeVar, Tuple
 
 T = TypeVar("T")
 
