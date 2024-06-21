@@ -3,7 +3,12 @@
 pydantic-serdes is a Pydantic-based tool designed to act as a conduit between serialized data and Python objects. It 
 not only facilitates the transformation of complex serialized data into Python objects, but also ensures stringent
 data validation. Think of it as the coach that transports your data from the realm of serialization into the world
-of Python, and vice-versa, all the while maintaining the integrity and structure of your data.
+of Python, and vice-versa, all the while maintaining the integrity and structure of your data. 
+
+> *DISCLAMER*:
+> Please note that this package was previously named `serial_bus` until version 0.2.0. To improve communication and 
+> disambiguation, it has been renamed to `pydantic-serdes`. 
+
 
 ## Install
 
@@ -22,11 +27,11 @@ poetry add pydantic-serdes
 ## Features
 
 - **Pydantic Integration**: Converting serialized data into Python objects is the oldest trick in the book, but 
-  pydantic-serdes elevates this process by directly converting the data into Pydantic models, which brings 
-  the added advantage of robust data validation. The models used in this process are defined by classes that inherit 
-  from either the ***PydanticSerdesBaseModel*** or ***PydanticSerdesRenderableModel***. This not only provides 
-  flexibility in setting up behaviors for your data, but also ensures data integrity through Pydantic's validation 
-  mechanisms.
+  pydantic-serdes elevates this process by directly converting the data into Pydantic models (and vice-versa), which 
+  brings the added advantage of robust data validation. The models used in this process are defined by classes that 
+  inherit from either the ***PydanticSerdesBaseModel*** or ***PydanticSerdesRenderableModel***. This not only 
+  provides flexibility in setting up behaviors for your data, but also ensures data integrity through Pydantic's 
+  validation mechanisms.
 
 
 - **Built-in Support for Multiple Formats**: Currently, it supports loading serialized data from JSON, YAML, TOML 
