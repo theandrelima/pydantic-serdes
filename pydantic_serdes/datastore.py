@@ -116,15 +116,14 @@ class ModelsGlobalStore:
     ) -> PydanticSerdesSortedSet:
         """
         Searches the records of a given model class based on the search_params.
-        Currently, only one k:v pair is supported in the search_params.
 
         Args:
             model_class (Type["PydanticSerdesBaseModel"]): the class of the model to
             be searched.
-            search_params (Optional[Dict[Any, Any]], optional): a dictionary with
-            keys being the attributes of the model and the values being the values
-            to be searched for. If `None`, returns the entire PydanticSerdesSortedSet
-            associated with `model_class` key. Defaults to None.
+            search_params (Optional[Dict[Any, Any]]): a dictionary with keys being the
+            attributes of the model and the values being the values to be searched for.
+            If `None`, returns the entire PydanticSerdesSortedSet associated with
+            `model_class` key. Defaults to None.
 
         Returns:
             PydanticSerdesSortedSet: the PydanticSerdesSortedSet containing the records
@@ -146,8 +145,7 @@ class ModelsGlobalStore:
     ) -> PydanticSerdesSortedSet:
         """
         Avails of self._search() to filter the records of a given model class
-        based on the search_params. Currently, only one k:v pair is supported
-        in the search_params.
+        based on the search_params.
 
         Args:
             model_class (Type["PydanticSerdesBaseModel"]): the class of the
@@ -169,8 +167,6 @@ class ModelsGlobalStore:
         """
         Avails of self.filter() method to get a single model instance from
         the global store based on the search_params.
-
-        Currently, only one k:v pair is supported in the search_params.
 
         Args:
             model_class (Type["PydanticSerdesBaseModel"]): the class of the model
