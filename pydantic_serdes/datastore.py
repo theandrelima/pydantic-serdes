@@ -93,7 +93,9 @@ class ModelsGlobalStore:
 
         self.records[cls_name].add(obj)
 
-    def _get_cls_name(self, obj: Union[Type["PydanticSerdesBaseModel"], "PydanticSerdesBaseModel"]) -> str:
+    def _get_cls_name(
+        self, obj: Union[Type["PydanticSerdesBaseModel"], "PydanticSerdesBaseModel"]
+    ) -> str:
         """
         Returns the name of the class of the given object.
 
@@ -106,7 +108,7 @@ class ModelsGlobalStore:
         """
         if inspect.isclass(obj):
             return obj.__name__
-        
+
         return obj.__class__.__name__
 
     def _search(
@@ -133,7 +135,11 @@ class ModelsGlobalStore:
 
         if search_params:
             return PydanticSerdesSortedSet(
-                [x for x in self.records[cls_name] if all(getattr(x, k) == v for k, v in search_params.items())]
+                [
+                    x
+                    for x in self.records[cls_name]
+                    if all(getattr(x, k) == v for k, v in search_params.items())
+                ]
             )
 
         return self.records[cls_name]

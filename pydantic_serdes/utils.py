@@ -41,7 +41,7 @@ def check_support_by_extension(file_path: Path) -> bool:
 
     Args:
         file_path (Path): the path to the file to be checked.
-    
+
     Raises:
         PydanticSerdesTypeError: If `file_path` does not represent a file.
 
@@ -219,9 +219,9 @@ def generate_from_file(file_path: Union[str, Path]) -> None:
         3 - create the models from the processed data using `create_all_models_from_dict`
 
     Args:
-        file_path (Union[str, Path]): The Path object or a str that can be converted to a 
-        Path object to the file containing serialized data to be loaded and parsed into a 
-        dictionary. 
+        file_path (Union[str, Path]): The Path object or a str that can be converted to a
+        Path object to the file containing serialized data to be loaded and parsed into a
+        dictionary.
     """
     loaded_data = load_file_to_dict(file_path)
     generate_from_dict(loaded_dict=loaded_data)

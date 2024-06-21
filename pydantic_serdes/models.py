@@ -23,6 +23,7 @@ from pydantic_serdes.utils import convert_dict_to_hashabledict
 
 GLOBAL_CONFIGS = get_config()
 
+
 class PydanticSerdesBaseModel(BaseModel):
     """A pydantic BaseModel class that provides the basic
     functionality for all pydantic-serdes Models classes.
@@ -90,7 +91,7 @@ class PydanticSerdesBaseModel(BaseModel):
 
     def __eq__(self, other):
         return str(self) == str(other)
-    
+
     @classmethod
     def _normalize_for_validations(cls, dict_args: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -98,10 +99,10 @@ class PydanticSerdesBaseModel(BaseModel):
             1 - the value is a list object; AND
             2 - if the key associated with the value matches a filed in the model class; AND
             3 - the type associated with the field is of base type 'tuple'.
-        
+
         This is done in the spirit of best-effort to ensure the hash-ability of the model
         instance in a seamless way. Although this helps, ideally, users should
-        guarantee this by themselves by passing tuples instead of lists when the field of 
+        guarantee this by themselves by passing tuples instead of lists when the field of
         the model class is of type tuple.
 
         TODO: expand on this to allow greater flexibility. For now, it's just a
@@ -116,13 +117,18 @@ class PydanticSerdesBaseModel(BaseModel):
         converted_dict = {}
 
         for key, value in dict_args.items():
-            if isinstance(value, Iterable) and not isinstance(value, OneToMany) and key in cls.__annotations__ and getattr(cls.__annotations__[key], '__origin__', None) is OneToMany:
+            if (
+                isinstance(value, Iterable)
+                and not isinstance(value, OneToMany)
+                and key in cls.__annotations__
+                and getattr(cls.__annotations__[key], "__origin__", None) is OneToMany
+            ):
                 value = OneToMany(value)
 
             converted_dict[key] = value
 
         return converted_dict
-    
+
     @property
     def directive(self) -> str:
         """

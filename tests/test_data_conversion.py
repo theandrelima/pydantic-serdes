@@ -25,12 +25,16 @@ def dst_file(request):
 def test_format_conversion(src_file, dst_file):
     if src_file != dst_file:
         # Convert the source file to the destination format
-        dst_format = os.path.splitext(dst_file)[1].lstrip('.')
-        if dst_format == 'ini':
+        dst_format = os.path.splitext(dst_file)[1].lstrip(".")
+        if dst_format == "ini":
             with pytest.raises(PydanticSerdesDumperError):
-                convert_src_file_to(src_file=src_file, dst_format=dst_format, dst_file=dst_file)
+                convert_src_file_to(
+                    src_file=src_file, dst_format=dst_format, dst_file=dst_file
+                )
         else:
-            convert_src_file_to(src_file=src_file, dst_format=dst_format, dst_file=dst_file)
+            convert_src_file_to(
+                src_file=src_file, dst_format=dst_format, dst_file=dst_file
+            )
 
             # Compare the created file with the expected file
             with open(dst_file, "r") as f_created:

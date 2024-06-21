@@ -101,10 +101,10 @@ class PydanticSerdesConfig:
         to the corresponding PydanticSerdesBaseModel subclass as values.
 
         Notice that this property returns self._directive_to_model_mapping, which will
-        be set once and always return that same value. 
+        be set once and always return that same value.
 
         It's only if self._directive_to_model_mapping is empty that this method will
-        try to populate it: 
+        try to populate it:
             - 1st: by importing all modules in self.models_modules; and
             - 2nd: by iterating over all subclasses of PydanticSerdesBaseModel that
               have the '_directive' field set.

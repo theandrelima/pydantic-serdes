@@ -15,7 +15,8 @@ def sort_lists_in_dict(d):
 def get_customer_model_records_for_assertion(customer_model_records):
     for customer_dict in customer_model_records:
         customer_dict["flagged_interests"] = list(
-            {interest['category'] for interest in customer_dict["flagged_interests"]})
+            {interest["category"] for interest in customer_dict["flagged_interests"]}
+        )
         sort_lists_in_dict(customer_dict)
 
     return customer_model_records

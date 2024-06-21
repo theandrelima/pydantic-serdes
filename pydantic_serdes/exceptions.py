@@ -32,6 +32,7 @@ class ModelInstanceDoesNotExistError(PydanticSerdesBaseException):
 class ModelInstanceAlreadyExistsError(PydanticSerdesBaseException):
     """Model already exists in the datastore."""
 
+
 class MultipleModelInstancesReturnedError(PydanticSerdesBaseException):
     """More than one model instance found in the datastore matching search criteria, when only one should."""
 
