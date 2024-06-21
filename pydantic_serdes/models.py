@@ -1,11 +1,13 @@
 import re
 from functools import total_ordering
 from typing import Any, Dict, List, Optional, Tuple, Union, ClassVar
+from collections.abc import Iterable
 
 from jinja2 import Environment, FileSystemLoader, Template
 from jinja2.exceptions import TemplateNotFound
 from pydantic import BaseModel, ConfigDict
 
+from pydantic_serdes.custom_collections import OneToMany
 from pydantic_serdes.config import get_config
 from pydantic_serdes.datastore import (
     PydanticSerdesSortedSet,
@@ -116,9 +118,9 @@ class PydanticSerdesBaseModel(BaseModel):
         converted_dict = {}
 
         for key, value in dict_args.items():
-            if isinstance(value, list) and key in cls.__annotations__ and getattr(cls.__annotations__[key], '__origin__', None) is tuple:
-                value = tuple(value)
-                    
+            if isinstance(value, Iterable) and not isinstance(value, OneToMany) and key in cls.__annotations__ and getattr(cls.__annotations__[key], '__origin__', None) is OneToMany:
+                value = OneToMany(value)
+
             converted_dict[key] = value
 
         return converted_dict
