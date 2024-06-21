@@ -18,52 +18,12 @@ for the desired serialization format.
 import configparser
 import io
 import json
-from pathlib import Path
-from typing import Any, Callable, Dict, Optional, Union
+from typing import Any, Dict
 
 import toml
 import yaml
 
-from pydantic_serdes.exceptions import PydanticSerdesDumperError
-
-
-def stream_dumper(dump_func: Callable[..., None]):
-    def standard_dumper_func(
-        data: Dict[Any, Any],
-        file_path: Optional[Union[Path, str]] = None,
-        *args,
-        **kwargs
-    ) -> str:
-        """
-        Decorator to dump data to a stream and optionally to a file.
-
-        Args:
-            data (Dict[Any, Any]): The data to be written to the serialized stream.
-            file_path (Optional[Union[Path, str]], optional): The path to the
-            file where the serialized data will be written. If provided, the data
-            will be written to the specified file. If not provided, the data
-            will only be written to the stream. Defaults to None.
-
-        Returns:
-            str: The string containing the written serialized data.
-
-        Raises:
-            PydanticSerdesDumperError: If any exception occurs while dumping the data.
-        """
-        try:
-            stream = io.StringIO()
-            dump_func(data, stream, *args, **kwargs)
-
-            if file_path is not None:
-                with open(file_path, "w") as file:
-                    file.write(stream.getvalue())
-
-            return stream.getvalue()
-        except Exception as e:
-            raise PydanticSerdesDumperError(str(e))
-
-    return standard_dumper_func
-
+from pydantic_serdes.decorators import stream_dumper
 
 @stream_dumper
 def json_dumper(

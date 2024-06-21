@@ -24,50 +24,12 @@ data itself. After parsing that data, your function must return a dictionary.
 import configparser
 import json
 from pathlib import Path
-from typing import Callable, Dict, Union, TextIO
+from typing import Union, TextIO
 
 import toml
 import yaml
 
-
-def stream_loader(load_func: Callable[..., Dict]):
-    """
-    This decorator wraps a loader function to allow it to handle different types of input sources.
-
-    Args:
-        load_func (Callable[..., Dict]): The function that will be used to load and parse the data.
-        This function should take a TextIO object as its first argument, which represents the stream of data to be
-        loaded.
-        It may also accept additional arguments, which will be passed through from the `standard_loader_func`.
-        The function should return a dictionary representing the parsed data.
-    """
-    def standard_loader_func(source: Union[Path, str, TextIO], *args, **kwargs) -> dict:
-        """
-        This decorator wraps a loader function to allow it to handle different types of input sources.
-        The input source can be a file path (as a string or Path object) or a TextIO object.
-        If the source is a file path, the decorator opens the file and passes the file stream to the
-        loader function. If the source is a TextIO object, it is passed directly to the loader function.
-
-        Args:
-            source (Union[Path, str, TextIO]): The source of the data to be loaded. This can be a file path (as a
-            string or Path object), in which case the file will be opened and its contents passed to `load_func`.
-            It can also be a TextIO object, in which case it will be passed directly to `load_func`.
-            *args: Variable length argument list to be passed to `load_func`.
-            **kwargs: Arbitrary keyword arguments to be passed to `load_func`.
-
-        Returns:
-            Callable: The decorated loader function.
-        """
-
-        if isinstance(source, (str, Path)):
-            with open(source, "r") as stream:
-                dictionary = load_func(stream, *args, **kwargs)
-        else:
-            dictionary = load_func(source, *args, **kwargs)
-
-        return dictionary
-
-    return standard_loader_func
+from pydantic_serdes.decorators import stream_loader
 
 
 @stream_loader
