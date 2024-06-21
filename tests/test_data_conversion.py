@@ -1,8 +1,8 @@
 import os
 import pytest
-from serial_bus.utils import convert_src_file_to
-from serial_bus.config import get_config
-from serial_bus.exceptions import SerialBusDumperError
+from pydantic_serdes.utils import convert_src_file_to
+from pydantic_serdes.config import get_config
+from pydantic_serdes.exceptions import PydanticSerdesDumperError
 
 # Define the supported formats
 CONFIG = get_config()
@@ -27,7 +27,7 @@ def test_format_conversion(src_file, dst_file):
         # Convert the source file to the destination format
         dst_format = os.path.splitext(dst_file)[1].lstrip('.')
         if dst_format == 'ini':
-            with pytest.raises(SerialBusDumperError):
+            with pytest.raises(PydanticSerdesDumperError):
                 convert_src_file_to(src_file=src_file, dst_format=dst_format, dst_file=dst_file)
         else:
             convert_src_file_to(src_file=src_file, dst_format=dst_format, dst_file=dst_file)

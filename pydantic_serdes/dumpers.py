@@ -24,7 +24,7 @@ from typing import Any, Callable, Dict, Optional, Union
 import toml
 import yaml
 
-from serial_bus.exceptions import SerialBusDumperError
+from pydantic_serdes.exceptions import PydanticSerdesDumperError
 
 
 def stream_dumper(dump_func: Callable[..., None]):
@@ -48,7 +48,7 @@ def stream_dumper(dump_func: Callable[..., None]):
             str: The string containing the written serialized data.
 
         Raises:
-            SerialBusDumperError: If any exception occurs while dumping the data.
+            PydanticSerdesDumperError: If any exception occurs while dumping the data.
         """
         try:
             stream = io.StringIO()
@@ -60,7 +60,7 @@ def stream_dumper(dump_func: Callable[..., None]):
 
             return stream.getvalue()
         except Exception as e:
-            raise SerialBusDumperError(str(e))
+            raise PydanticSerdesDumperError(str(e))
 
     return standard_dumper_func
 

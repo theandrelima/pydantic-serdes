@@ -1,25 +1,25 @@
 import importlib
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional, Type, TypeVar, Union
-from serial_bus.config import get_config
-from serial_bus.exceptions import (
-    SerialBusImportError,
-    SerialBusTypeError,
+from pydantic_serdes.config import get_config
+from pydantic_serdes.exceptions import (
+    PydanticSerdesImportError,
+    PydanticSerdesTypeError,
     UnsupportedFileFormatError,
 )
 
 GLOBAL_CONFIGS = get_config()
 
 # This module is where the 'HashableDict' will be used the most.
-# Hence, we import it here and in serial_bus.__init__.py we import
+# Hence, we import it here and in pydantic_serdes.__init__.py we import
 # it from here. Other modules, including client code, should always do
-# 'from serial_bus import HashableDict'.
+# 'from pydantic_serdes import HashableDict'.
 _module, _, _cls = GLOBAL_CONFIGS.hashable_dict_cls.rpartition(".")
 try:
     hashable_dict_module = importlib.import_module(_module)
     HashableDict = getattr(hashable_dict_module, _cls)
 except AttributeError:
-    raise SerialBusImportError(
+    raise PydanticSerdesImportError(
         f"Could not import class {_cls} from module {_module}"
     )
 
@@ -29,7 +29,7 @@ except AttributeError:
 HashableDictType = TypeVar("HashableDictType", bound=HashableDict)
 
 if TYPE_CHECKING:
-    from serial_bus.models import SerialBusBaseModel
+    from pydantic_serdes.models import PydanticSerdesBaseModel
 
 
 def check_support_by_extension(file_path: Path) -> bool:
@@ -43,13 +43,13 @@ def check_support_by_extension(file_path: Path) -> bool:
         file_path (Path): the path to the file to be checked.
     
     Raises:
-        SerialBusTypeError: If `file_path` does not represent a file.
+        PydanticSerdesTypeError: If `file_path` does not represent a file.
 
     Returns:
         bool: True if the file is of a supported format, False otherwise.
     """
     if not file_path.is_file():
-        raise SerialBusTypeError(
+        raise PydanticSerdesTypeError(
             f"{file_path.absolute()} does not exist or is not a file."
         )
     return file_path.suffix.lstrip(".") in GLOBAL_CONFIGS.supported_formats
@@ -63,7 +63,7 @@ def load_file_to_dict(file_path: Union[str, Path]) -> dict:
         string, it will be converted to a Path object.
 
     Raises:
-        SerialBusImportError: If the supplied module with loader
+        PydanticSerdesImportError: If the supplied module with loader
         functions can't be imported.
         UnsupportedFileFormatError: If the file format is not supported.
 
@@ -84,7 +84,7 @@ def load_file_to_dict(file_path: Union[str, Path]) -> dict:
             GLOBAL_CONFIGS.loaders_module, f"{file_path.suffix.lstrip('.')}_loader"
         )
     except AttributeError:
-        raise SerialBusImportError(
+        raise PydanticSerdesImportError(
             f"Could not find a loader function with name {file_path.suffix.lstrip('.')}_loader"
         )
     return loader_function(file_path)
@@ -118,7 +118,7 @@ def convert_src_file_to(
 
     Raises:
         UnsupportedFileFormatError: If the src_file format is not supported.
-        SerialBusImportError: If a loader of dumper function can't be found
+        PydanticSerdesImportError: If a loader of dumper function can't be found
         for the dst_format respectively.
     """
     if isinstance(src_file, str):
@@ -132,7 +132,7 @@ def convert_src_file_to(
     try:
         dumper_function = getattr(GLOBAL_CONFIGS.dumpers_module, f"{dst_format}_dumper")
     except AttributeError:
-        raise SerialBusImportError(
+        raise PydanticSerdesImportError(
             f"Could not find a dumper function with name {dst_format}_dumper"
         )
 
@@ -187,7 +187,7 @@ def generate_from_dict(
     loaded_dict: dict,
 ) -> None:
     """
-    Instantiate all SerialBus models from a dictionary.
+    Instantiate all pydantic-serdes models from a dictionary.
 
     Args:
         loaded_dict (dict): the dictionary to be used to create the models.

@@ -4,7 +4,7 @@ import os
 from types import ModuleType
 from typing import List, Dict, Type
 
-from serial_bus.exceptions import SerialBusImportError
+from pydantic_serdes.exceptions import PydanticSerdesImportError
 
 # Below, we define the default values for the environment variables that
 # will be used to configure the package. If the user wants to override these
@@ -15,21 +15,21 @@ from serial_bus.exceptions import SerialBusImportError
 TEMPLATES_DIR = "templates"
 
 # The python dotted path to the class used for creating hashable dictionaries
-HASHABLE_DICT_CLS = "serial_bus.custom_collections.HashableDict"
+HASHABLE_DICT_CLS = "pydantic_serdes.custom_collections.HashableDict"
 
 # The python dotted path to the module the provides loader functions
-LOADERS_MODULE = "serial_bus.loaders"
+LOADERS_MODULE = "pydantic_serdes.loaders"
 
 # The python dotted path to the module that provides dumper functions
-DUMPERS_MODULE = "serial_bus.dumpers"
+DUMPERS_MODULE = "pydantic_serdes.dumpers"
 
-# The python dotted paths to all modules that contain subclasses of SerialBusBaseModel
+# The python dotted paths to all modules that contain subclasses of PydanticSerdesBaseModel
 # as an environment variable, it's a comma-separated string of dotted paths.
 # Example: "my_module1.models,my_module2.models"
-MODELS_MODULES = "serial_bus.models"
+MODELS_MODULES = "pydantic_serdes.models"
 
 
-class SerialBusConfig:
+class PydanticSerdesConfig:
     """
     This class is used to hold the configuration of the package, which is
     determined by the environment variables.
@@ -57,7 +57,7 @@ class SerialBusConfig:
         try:
             loaders_module = importlib.import_module(self.loaders_module_path)
         except ImportError as err:
-            raise SerialBusImportError(err)
+            raise PydanticSerdesImportError(err)
 
         return loaders_module
 
@@ -70,7 +70,7 @@ class SerialBusConfig:
         try:
             dumpers_module = importlib.import_module(self.dumpers_module_path)
         except ImportError as err:
-            raise SerialBusImportError(err)
+            raise PydanticSerdesImportError(err)
 
         return dumpers_module
 
@@ -98,7 +98,7 @@ class SerialBusConfig:
     def directive_to_model_mapping(self) -> Dict[str, type]:
         """
         Returns a dictionary with the directive names as keys and the dotted paths
-        to the corresponding SerialBusBaseModel subclass as values.
+        to the corresponding PydanticSerdesBaseModel subclass as values.
 
         Notice that this property returns self._directive_to_model_mapping, which will
         be set once and always return that same value. 
@@ -106,7 +106,7 @@ class SerialBusConfig:
         It's only if self._directive_to_model_mapping is empty that this method will
         try to populate it: 
             - 1st: by importing all modules in self.models_modules; and
-            - 2nd: by iterating over all subclasses of SerialBusBaseModel that 
+            - 2nd: by iterating over all subclasses of PydanticSerdesBaseModel that
               have the '_directive' field set.
         """
         if self._directive_to_model_mapping:
@@ -115,9 +115,9 @@ class SerialBusConfig:
         self._import_all_models_modules()
 
         # import here to avoid circular imports error
-        from serial_bus.models import SerialBusBaseModel
+        from pydantic_serdes.models import PydanticSerdesBaseModel
 
-        for cls in SerialBusBaseModel.get_subclasses_with_directive():
+        for cls in PydanticSerdesBaseModel.get_subclasses_with_directive():
             self._directive_to_model_mapping[cls._directive.get_default()] = cls
 
         return self._directive_to_model_mapping
@@ -125,20 +125,20 @@ class SerialBusConfig:
     def _import_all_models_modules(self) -> None:
         """
         By importing all models returned by self.models_modules, this method ensures
-        subclasses of SerialBusBaseModel are registered for discovery.
+        subclasses of PydanticSerdesBaseModel are registered for discovery.
 
         Notice this method should be treated as private. Refrain from calling it
         directly, as it's called automatically by self.directive_to_model_mapping.
 
         Raises:
-            SerialBusImportError: If any of the modules in self.models_modules
+            PydanticSerdesImportError: If any of the modules in self.models_modules
             cannot be imported.
         """
         for module in self.models_modules:
             try:
                 importlib.import_module(module)
             except ImportError as err:
-                raise SerialBusImportError(err)
+                raise PydanticSerdesImportError(err)
 
 
 GLOBAL_CONFIGS = None
@@ -148,6 +148,6 @@ def get_config():
     global GLOBAL_CONFIGS
 
     if GLOBAL_CONFIGS is None:
-        GLOBAL_CONFIGS = SerialBusConfig()
+        GLOBAL_CONFIGS = PydanticSerdesConfig()
 
     return GLOBAL_CONFIGS

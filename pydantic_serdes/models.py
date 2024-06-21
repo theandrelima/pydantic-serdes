@@ -6,38 +6,38 @@ from jinja2 import Environment, FileSystemLoader, Template
 from jinja2.exceptions import TemplateNotFound
 from pydantic import BaseModel, ConfigDict
 
-from serial_bus.config import get_config
-from serial_bus.datastore import (
-    SerialBusSortedSet,
+from pydantic_serdes.config import get_config
+from pydantic_serdes.datastore import (
+    PydanticSerdesSortedSet,
     ModelsGlobalStore,
     get_global_data_store,
 )
-from serial_bus.exceptions import (
-    SerialBusTypeError,
+from pydantic_serdes.exceptions import (
+    PydanticSerdesTypeError,
     ModelInitializationError,
     RenderableTemplateError,
 )
-from serial_bus.utils import convert_dict_to_hashabledict
+from pydantic_serdes.utils import convert_dict_to_hashabledict
 
 GLOBAL_CONFIGS = get_config()
 
 
 @total_ordering
-class SerialBusBaseModel(BaseModel):
+class PydanticSerdesBaseModel(BaseModel):
     """A pydantic BaseModel class that provides the basic
-    functionality for all SerialBus Models classes.
+    functionality for all pydantic-serdes Models classes.
 
-    Any SerialBusBaseModel child class SHOULD be instantiated from
+    Any PydanticSerdesBaseModel child class SHOULD be instantiated from
     .create_from_loaded_data() or .create() class methods provided.
     Instantiation by using __init__() directly is discouraged.
 
     This class implements functools.total_ordering to allow its instances
-    to be sorted accordingly inside a datastore.SerialBusSortedSet.
+    to be sorted accordingly inside a datastore.PydanticSerdesSortedSet.
 
-    Because datastore.SerialBusSortedSet is a python Set, all
-    SerialBus models MUST be hashable. This has a twofold consequence:
+    Because datastore.PydanticSerdesSortedSet is a python Set, all
+    pydantic-serdes models MUST be hashable. This has a twofold consequence:
         - Model classes must implement the __hash__() method;
-        - all attributes of any SerialBus model class must be hashable;
+        - all attributes of any pydantic-serdes model class must be hashable;
     """
 
     # this class attribute is used as a registry for all subclasses
@@ -64,16 +64,16 @@ class SerialBusBaseModel(BaseModel):
     _key: Tuple[str]
 
     # the global data store doesn't allow for duplication, as it
-    # implements a set. However, SerialBus doesn't necessarily care if a
+    # implements a set. However, pydantic-serdes doesn't necessarily care if a
     # duplication happens.This attribute indicates if an exception should
     # be raised in case an attempted duplication is detected.
     _err_on_duplicate: bool = False
 
     def __new__(cls, *args, **kwargs):
         """Overrides the __new__ method to prevent direct instantiation of this class."""
-        if cls == SerialBusBaseModel:
+        if cls == PydanticSerdesBaseModel:
             raise ModelInitializationError(
-                "Cannot instantiate SerialBusBaseModel directly."
+                "Cannot instantiate PydanticSerdesBaseModel directly."
             )
         return super().__new__(cls)
 
@@ -151,10 +151,10 @@ class SerialBusBaseModel(BaseModel):
             from a file of supported format and parsed into a Dictionary or List.
 
         Raises:
-            SerialBusTypeError: If `data` is not a dict nor a list.
+            PydanticSerdesTypeError: If `data` is not a dict nor a list.
         """
         if not isinstance(data, dict) and not isinstance(data, list):
-            raise SerialBusTypeError(
+            raise PydanticSerdesTypeError(
                 f"Data passed to {cls.__name__} must be of type 'dict' or 'list', but was {type(data)}"
             )
 
@@ -168,7 +168,7 @@ class SerialBusBaseModel(BaseModel):
     @classmethod
     def create(
         cls, dict_args: Dict[Any, Any], *args, **kwargs
-    ) -> "SerialBusBaseModel":
+    ) -> "PydanticSerdesBaseModel":
         """
         Factory class method used to instantiate a model with data
         passed as a dictionary.
@@ -178,7 +178,7 @@ class SerialBusBaseModel(BaseModel):
             to instantiate the model.
 
         Returns:
-            SerialBusBaseModel: the instance of the model created.
+            PydanticSerdesBaseModel: the instance of the model created.
         """
         dict_args = convert_dict_to_hashabledict(dict_args)
         dict_args = cls._normalize_for_validations(dict_args)
@@ -193,9 +193,9 @@ class SerialBusBaseModel(BaseModel):
         return cls._data_store
 
     @classmethod
-    def filter(cls, search_params: Dict[Any, Any]) -> SerialBusSortedSet:
+    def filter(cls, search_params: Dict[Any, Any]) -> PydanticSerdesSortedSet:
         """
-        Returns a SerialBusSortedSet containing all instances of this
+        Returns a PydanticSerdesSortedSet containing all instances of this
         class that match the search_params.
 
         Args:
@@ -203,13 +203,13 @@ class SerialBusBaseModel(BaseModel):
             attribute of the model and the value being the value to be searched for.
 
         Returns:
-            SerialBusSortedSet: the SerialBusSortedSet containing the records
+            PydanticSerdesSortedSet: the PydanticSerdesSortedSet containing the records
             that match the search_params.
         """
         return cls.ds().filter(cls, search_params)
 
     @classmethod
-    def get(cls, search_params: Dict[Any, Any]) -> "SerialBusBaseModel":
+    def get(cls, search_params: Dict[Any, Any]) -> "PydanticSerdesBaseModel":
         """
         Retrieves a single instance of this class that matches the provided search parameters.
 
@@ -219,7 +219,7 @@ class SerialBusBaseModel(BaseModel):
             correspond to the expected values of these attributes.
 
         Returns:
-            SerialBusBaseModel: The model instance that matches the search parameters.
+            PydanticSerdesBaseModel: The model instance that matches the search parameters.
 
         Raises:
             ModelDoesNotExist: If no instance of this class matches the search parameters.
@@ -228,8 +228,8 @@ class SerialBusBaseModel(BaseModel):
         return cls.ds().get(cls, search_params)
 
     @classmethod
-    def get_all(cls) -> SerialBusSortedSet:
-        """Returns a SerialBusSortedSet containing all instances of this class."""
+    def get_all(cls) -> PydanticSerdesSortedSet:
+        """Returns a PydanticSerdesSortedSet containing all instances of this class."""
         return cls.ds().get_all_by_class(cls)
 
     @classmethod
@@ -251,7 +251,7 @@ class SerialBusBaseModel(BaseModel):
         ]
 
 
-class SerialBusRenderableModel(SerialBusBaseModel):
+class PydanticSerdesRenderableModel(PydanticSerdesBaseModel):
     """A Renderable model allows for its instances to render a string
     according to a Jinja2 template. This enables various automation
     use-cases.
@@ -269,16 +269,16 @@ class SerialBusRenderableModel(SerialBusBaseModel):
 
     def __new__(cls, *args, **kwargs):
         """Overrides the __new__ method to prevent direct instantiation of this class."""
-        if cls == SerialBusRenderableModel:
+        if cls == PydanticSerdesRenderableModel:
             raise ModelInitializationError(
-                "Cannot instantiate SerialBusRenderableModel directly."
+                "Cannot instantiate PydanticSerdesRenderableModel directly."
             )
         return super().__new__(cls)
 
     @classmethod
     def create(
         cls, dict_args: Dict[Any, Any], *args, **kwargs
-    ) -> "SerialBusRenderableModel":
+    ) -> "PydanticSerdesRenderableModel":
         """Overrides the create method to guarantee the _template_name attribute"""
         cls._set_template(**dict_args)
         return super().create(dict_args, *args, **kwargs)
@@ -312,7 +312,7 @@ class SerialBusRenderableModel(SerialBusBaseModel):
 
     def get_rendered_str(self, extra_vars_dict: Optional[Dict[str, Any]] = None) -> str:
         """
-        Renders this RenderableSerialBusModel into a string according to the Jinja2
+        Renders this RenderablePydanticSerdesModel into a string according to the Jinja2
         template indicated by _template_name attribute.
 
         A dictionary representation of this instance will be passed to the render method.
@@ -337,7 +337,7 @@ class SerialBusRenderableModel(SerialBusBaseModel):
 
     def _get_template(self) -> Template:
         """
-        Retrieves the template file to be used to render this RenderableSerialBusModel.
+        Retrieves the template file to be used to render this RenderablePydanticSerdesModel.
         Currently, only Jinja2 templates are supported. Hence, the file is expected to
         have a '.j2' extension.
 
