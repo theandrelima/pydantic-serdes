@@ -1,4 +1,50 @@
+from collections.abc import Sequence
 from sortedcontainers import SortedSet
+from typing import Generic, TypeVar, Tuple
+
+T = TypeVar('T')
+
+
+class OneToMany(Tuple[T, ...], Generic[T]):
+    """
+    This class is provided as a means to map One-to-Many relationships between two model objects.
+
+    It is nothing but a custom tuple subclass that enforces certain constraints on its elements:
+        - The input iterable must be a sequence.
+        - The sequence must not be empty.
+        - All elements in the sequence must be of the same type.
+        - Each element in the sequence must be hashable.
+
+    If any of these constraints are not met, the class raises an appropriate error.
+
+    Raises:
+        TypeError: If the input is not a sequence, if the elements are not of the same type, or if an element is not hashable.
+        ValueError: If the sequence is empty.
+
+    Note:
+        This class uses the `__new__` method for initialization, following the immutability principle of the tuple superclass.
+    """
+    def __new__(cls, iterable):
+        if not isinstance(iterable, Sequence):
+            raise TypeError(f"The OneToMany initialization iterable must be a sequence, but got {type(iterable).__name__}")
+
+        # Check if the sequence is non-empty
+        if not iterable:
+            raise ValueError("The OneToMany initialization iterable can't be empty")
+
+        # Check if all elements are of the same type
+        first_type = type(iterable[0])
+        if not all(isinstance(item, first_type) for item in iterable):
+            raise TypeError("All elements of a OneToMany initialization iterable must be of the same type")
+
+        # Check if each element in the sequence is hashable
+        for item in iterable:
+            try:
+                hash(item)
+            except TypeError:
+                raise TypeError(f"Each element in the OneToMany initialization iterable must be hashable, but {item} isn't.")
+
+        return super().__new__(cls, iterable)
 
 
 class HashableDict(dict):
