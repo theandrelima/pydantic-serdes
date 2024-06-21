@@ -36,7 +36,7 @@ poetry add pydantic-serdes
 
 - **Built-in Support for Multiple Formats**: Currently, it supports loading serialized data from JSON, YAML, TOML 
   and INI. While future support for other formats is planned, if you need to cover additional formats, or even 
-  provide your own parsing business logic, this can be easily achieved by extending PydanticSerdesbasic 
+  provide your own parsing business logic, this can be easily achieved by extending pydantic-serdes basic 
   coverage with your own loader and/or dumper functions. Speaking of which...
 
 
