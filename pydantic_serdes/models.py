@@ -91,21 +91,15 @@ class PydanticSerdesBaseModel(BaseModel):
     @classmethod
     def _normalize_for_validations(cls, dict_args: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Converts all values of dict_args to tuples when:
-            1 - the value is a list object; AND
+        Attempts to convert all values of dict_args to OneToMany objects when:
+            1 - the value is an iterable object; AND
             2 - if the key associated with the value matches a filed in the model class; AND
-            3 - the type associated with the field is of base type 'tuple'.
+            3 - the type associated with the field is 'OneToMany'.
 
         This is done in the spirit of best-effort to ensure the hash-ability of the model
-        instance in a seamless way. Although this helps, ideally, users should
-        guarantee this by themselves by passing tuples instead of lists when the field of
-        the model class is of type tuple.
-
-        TODO: expand on this to allow greater flexibility. For now, it's just a
-        placeholder to ensure the dict_args is hashable. In the future, this
-        class should allow a custom type of 'hashable sequence' to be defined
-        as a means to represent ManyToOne relationships and then automatically
-        convert collection types (like lists or sets) to this custom type.
+        instance in a seamless way. Although this improves developer experience, ideally,
+        developers should guarantee this themselves by assigning OneToMany objects to their
+        OneToMany fields.
 
         Returns:
             Dict[str, Any]: the converted dict.
