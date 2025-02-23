@@ -1,8 +1,10 @@
 import os
+from collections import defaultdict
 
 import pytest
 
 from pydantic_serdes import GLOBAL_DATA_STORE as data_store
+from pydantic_serdes.custom_collections import PydanticSerdesSortedSet
 from pydantic_serdes.utils import generate_from_file, load_file_to_dict
 # Because one of the tests will need access to CustomerModel class,
 # it's imported here. And because it's imported before we ever try to
@@ -105,3 +107,17 @@ def test_rendering(rendered_customers_txt_file):
 
     with open(rendered_customers_txt_file, "r") as f:
         assert rendered_str == f.read()
+
+
+def test_ds_flush():
+    """Test the flush() classmethod of ModelsGlobalStore."""
+    # Verify data store has records before flushing
+    assert len(data_store.records) > 0, "Data store should have records before flushing"
+    
+    # Flush the data store
+    data_store.flush()
+    
+    # Verify data store is empty after flushing
+    assert len(data_store.records) == 0, "Data store should be empty after flushing"
+    assert isinstance(data_store.records, defaultdict), "Records should still be a defaultdict"
+    assert data_store.records.default_factory == PydanticSerdesSortedSet, "Default factory should be PydanticSerdesSortedSet"
