@@ -49,6 +49,14 @@ class ModelsGlobalStore:
         raise DataStoreDirectAssignmentError(
             "Cannot directly assign to attribute 'records' of a ModelsGlobalStore object."
         )
+    
+    @classmethod
+    def flush(cls) -> None:
+        """
+        Clears all records from the store by resetting to an empty defaultdict.
+        This method is useful for cleaning up data when needed - e.g. test scenarios.
+        """
+        cls._records = defaultdict(PydanticSerdesSortedSet)
 
     def as_dict(self) -> Dict[str, Any]:
         """
