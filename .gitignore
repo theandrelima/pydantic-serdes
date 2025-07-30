@@ -163,5 +163,5 @@ cython_debug/
 
 tests/mocked_data/_*
 
-# ignore .lock files
-*.lock
+# # ignore .lock files
+# *.lock
