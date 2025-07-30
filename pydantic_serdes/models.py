@@ -15,7 +15,7 @@ from pydantic_serdes.decorators import onetomany_validators
 from pydantic_serdes.exceptions import (ModelInitializationError,
                                         PydanticSerdesTypeError,
                                         RenderableTemplateError)
-from pydantic_serdes.utils import convert_dict_to_hashabledict
+from pydantic_serdes.utils import convert_to_hashable
 
 GLOBAL_CONFIGS = get_config()
 
@@ -176,7 +176,7 @@ class PydanticSerdesBaseModel(BaseModel):
         Returns:
             PydanticSerdesBaseModel: the instance of the model created.
         """
-        dict_args = convert_dict_to_hashabledict(dict_args)
+        dict_args = convert_to_hashable(dict_args)
         dict_args = cls._normalize_for_validations(dict_args)
         new_obj_model = cls.model_validate(dict_args, strict=True, *args, **kwargs)
         new_obj_model.ds().save(new_obj_model)
