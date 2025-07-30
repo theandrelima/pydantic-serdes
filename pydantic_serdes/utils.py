@@ -1,6 +1,7 @@
 import importlib
+import warnings
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Optional, Type, TypeVar, Union
 
 from pydantic_serdes.config import get_config
 from pydantic_serdes.exceptions import (PydanticSerdesImportError,
@@ -143,6 +144,37 @@ def convert_src_file_to(
     return dumper_function(loaded_dict, dst_file, *args, **kwargs)
 
 
+def convert_to_hashable(data_structure: Any) -> Any:
+    """
+    Recursively convert any data structure to a fully hashable equivalent.
+    
+    Handles:
+    - Dictionaries (converted to HashableDict)
+    - Lists (converted to tuples)
+    - Sets (converted to frozensets)
+    - Nested structures of any depth
+    - None values
+    - Primitive types (passed through unchanged)
+    
+    Args:
+        data_structure: Any Python object to convert
+        
+    Returns:
+        A hashable version of the input with equivalent structure
+    """
+    if data_structure is None:
+        return None
+    elif isinstance(data_structure, dict):
+        return HashableDict({k: convert_to_hashable(v) for k, v in data_structure.items()})
+    elif isinstance(data_structure, list):
+        return tuple(convert_to_hashable(item) for item in data_structure)
+    elif isinstance(data_structure, set):
+        return frozenset(convert_to_hashable(item) for item in data_structure)
+    else:
+        # Primitive types or already hashable types are returned as-is
+        return data_structure
+
+
 def convert_flat_dict_to_hashabledict(dict_obj: dict) -> Type[HashableDictType]:
     """
     Converts a flat dictionary to a HashableDict.
@@ -150,12 +182,21 @@ def convert_flat_dict_to_hashabledict(dict_obj: dict) -> Type[HashableDictType]:
     `convert_dict_to_hashabledict` which will handle the
     conversion of nested dictionaries.
 
+    Deprecated: Use convert_to_hashable instead.
+
     Args:
         dict_obj (dict): the dictionary to be converted.
 
     Returns:
         Type[HashableDictType]: the converted dictionary as a HashableDict.
     """
+    warnings.warn(
+        "convert_flat_dict_to_hashabledict is deprecated and will be removed in version 2.0. "
+        "Use 'convert_to_hashable' instead.",
+        DeprecationWarning,
+        stacklevel=2
+    )
+    
     if not dict_obj:
         return HashableDict()
 
@@ -168,12 +209,21 @@ def convert_flat_dict_to_hashabledict(dict_obj: dict) -> Type[HashableDictType]:
 def convert_dict_to_hashabledict(dict_obj: dict) -> Type[HashableDictType]:
     """Converts a nested dictionary to a HashableDict.
 
+    Deprecated: Use convert_to_hashable instead.
+
     Args:
         dict_obj (dict): the dictionary to be converted.
 
     Returns:
         Type[HashableDictType]: the converted dictionary as a HashableDict.
     """
+    warnings.warn(
+        "convert_dict_to_hashabledict is deprecated and will be removed in version 2.0. "
+        "Use 'convert_to_hashable' instead.",
+        DeprecationWarning,
+        stacklevel=2
+    )
+    
     for k in dict_obj:
         if isinstance(dict_obj[k], dict):
             convert_dict_to_hashabledict(dict_obj[k])
