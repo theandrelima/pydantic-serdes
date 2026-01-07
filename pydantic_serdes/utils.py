@@ -87,7 +87,7 @@ def load_file_to_dict(file_path: Union[str, Path]) -> dict:
         raise PydanticSerdesImportError(
             f"Could not find a loader function with name {file_path.suffix.lstrip('.')}_loader"
         )
-    return loader_function(file_path)
+    return loader_function(file_path) or {}
 
 
 def convert_src_file_to(
