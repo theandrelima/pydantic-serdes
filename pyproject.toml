@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pydantic_serdes"
-version = "1.0.3"
+version = "1.0.4"
 description = "A Python package that standardizes data serialization and deserialization from/to pydantic models."
 authors = ["André Lima"]
 documentation= "https://github.com/theandrelima/pydantic-serdes"
