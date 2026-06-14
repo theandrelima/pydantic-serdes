@@ -1,6 +1,6 @@
 """
 This module contains functions for loading data from various file formats.
-It includes functions for loading data from JSON, YAML, TOML and INI files. 
+It includes functions for loading data from JSON, YAML, TOML and INI files.
 Each function takes an input that holds a reference to the serialized data,
 then it parses the data, and returns a Python dictionary. By default,
 pydantic-serdes finds which loader to use automatically based on the file

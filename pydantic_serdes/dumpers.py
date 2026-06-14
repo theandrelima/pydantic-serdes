@@ -1,7 +1,7 @@
 """
 This module contains functions for creating serialized data in all supported formats.
 
-Each function takes a Python dictionary, serializes the data, and writes it 
+Each function takes a Python dictionary, serializes the data, and writes it
 to a TextStream object. Optionally, a file can be created with the contents
 of that TextStream if the dumper function is provided with a file path, which
 can be either a Path or a str object.

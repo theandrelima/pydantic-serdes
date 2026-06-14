@@ -6,13 +6,16 @@ import pytest
 from pydantic_serdes import GLOBAL_DATA_STORE as data_store
 from pydantic_serdes.custom_collections import PydanticSerdesSortedSet
 from pydantic_serdes.utils import generate_from_file, load_file_to_dict
+
 # Because one of the tests will need access to CustomerModel class,
 # it's imported here. And because it's imported before we ever try to
 # create any model instance, the `MODELS_MODULES` env var doesn't need
 # to be set.
 from tests.models import CustomerModel
-from tests.utils import (get_customer_data_for_assertion,
-                         get_customer_model_records_for_assertion)
+from tests.utils import (
+    get_customer_data_for_assertion,
+    get_customer_model_records_for_assertion,
+)
 
 
 ### FIXTURES ###
@@ -69,15 +72,15 @@ def test_generate_models(products_yaml_file, customers_json_file):
 
 
 def test_ds_records_keys():
-    assert (
-        len(data_store.records.keys()) == 2
-    ), "data_store.records should have exactly two keys"
-    assert (
-        "ProductModel" in data_store.records
-    ), "data_store.records should contain a key named 'ProductModel'"
-    assert (
-        "CustomerModel" in data_store.records
-    ), "data_store.records should contain a key named 'CustomerModel'"
+    assert len(data_store.records.keys()) == 2, (
+        "data_store.records should have exactly two keys"
+    )
+    assert "ProductModel" in data_store.records, (
+        "data_store.records should contain a key named 'ProductModel'"
+    )
+    assert "CustomerModel" in data_store.records, (
+        "data_store.records should contain a key named 'CustomerModel'"
+    )
 
 
 def test_ds_records_values(products_data, customers_data):
@@ -113,11 +116,15 @@ def test_ds_flush():
     """Test the flush() classmethod of ModelsGlobalStore."""
     # Verify data store has records before flushing
     assert len(data_store.records) > 0, "Data store should have records before flushing"
-    
+
     # Flush the data store
     data_store.flush()
-    
+
     # Verify data store is empty after flushing
     assert len(data_store.records) == 0, "Data store should be empty after flushing"
-    assert isinstance(data_store.records, defaultdict), "Records should still be a defaultdict"
-    assert data_store.records.default_factory == PydanticSerdesSortedSet, "Default factory should be PydanticSerdesSortedSet"
+    assert isinstance(data_store.records, defaultdict), (
+        "Records should still be a defaultdict"
+    )
+    assert data_store.records.default_factory == PydanticSerdesSortedSet, (
+        "Default factory should be PydanticSerdesSortedSet"
+    )

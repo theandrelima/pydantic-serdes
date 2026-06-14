@@ -29,6 +29,7 @@ def onetomany_validators(cls):
     for field_name, field_type in cls.__annotations__.items():
         if getattr(field_type, "__origin__", None) is OneToMany:
             expected_type = field_type.__args__[0]
+
             def onetomany_validator(cls, v):
                 if not all(isinstance(item, expected_type) for item in v):
                     raise TypeError(

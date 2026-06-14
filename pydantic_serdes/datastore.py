@@ -4,10 +4,12 @@ from functools import cache
 from typing import TYPE_CHECKING, Any, DefaultDict, Dict, Optional, Type, Union
 
 from pydantic_serdes.custom_collections import PydanticSerdesSortedSet
-from pydantic_serdes.exceptions import (DataStoreDirectAssignmentError,
-                                        ModelInstanceAlreadyExistsError,
-                                        ModelInstanceDoesNotExistError,
-                                        MultipleModelInstancesReturnedError)
+from pydantic_serdes.exceptions import (
+    DataStoreDirectAssignmentError,
+    ModelInstanceAlreadyExistsError,
+    ModelInstanceDoesNotExistError,
+    MultipleModelInstancesReturnedError,
+)
 
 if TYPE_CHECKING:
     from pydantic_serdes.models import PydanticSerdesBaseModel
@@ -49,7 +51,7 @@ class ModelsGlobalStore:
         raise DataStoreDirectAssignmentError(
             "Cannot directly assign to attribute 'records' of a ModelsGlobalStore object."
         )
-    
+
     @classmethod
     def flush(cls) -> None:
         """
