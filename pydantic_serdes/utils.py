@@ -4,9 +4,11 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Optional, Type, TypeVar, Union
 
 from pydantic_serdes.config import get_config
-from pydantic_serdes.exceptions import (PydanticSerdesImportError,
-                                        PydanticSerdesTypeError,
-                                        UnsupportedFileFormatError)
+from pydantic_serdes.exceptions import (
+    PydanticSerdesImportError,
+    PydanticSerdesTypeError,
+    UnsupportedFileFormatError,
+)
 
 GLOBAL_CONFIGS = get_config()
 
@@ -29,7 +31,7 @@ except AttributeError:
 HashableDictType = TypeVar("HashableDictType", bound=HashableDict)
 
 if TYPE_CHECKING:
-    from pydantic_serdes.models import PydanticSerdesBaseModel
+    pass
 
 
 def check_support_by_extension(file_path: Path) -> bool:
@@ -147,7 +149,7 @@ def convert_src_file_to(
 def convert_to_hashable(data_structure: Any) -> Any:
     """
     Recursively convert any data structure to a fully hashable equivalent.
-    
+
     Handles:
     - Dictionaries (converted to HashableDict)
     - Lists (converted to tuples)
@@ -155,17 +157,19 @@ def convert_to_hashable(data_structure: Any) -> Any:
     - Nested structures of any depth
     - None values
     - Primitive types (passed through unchanged)
-    
+
     Args:
         data_structure: Any Python object to convert
-        
+
     Returns:
         A hashable version of the input with equivalent structure
     """
     if data_structure is None:
         return None
     elif isinstance(data_structure, dict):
-        return HashableDict({k: convert_to_hashable(v) for k, v in data_structure.items()})
+        return HashableDict(
+            {k: convert_to_hashable(v) for k, v in data_structure.items()}
+        )
     elif isinstance(data_structure, list):
         return tuple(convert_to_hashable(item) for item in data_structure)
     elif isinstance(data_structure, set):
@@ -194,9 +198,9 @@ def convert_flat_dict_to_hashabledict(dict_obj: dict) -> Type[HashableDictType]:
         "convert_flat_dict_to_hashabledict is deprecated and will be removed in version 2.0. "
         "Use 'convert_to_hashable' instead.",
         DeprecationWarning,
-        stacklevel=2
+        stacklevel=2,
     )
-    
+
     if not dict_obj:
         return HashableDict()
 
@@ -221,9 +225,9 @@ def convert_dict_to_hashabledict(dict_obj: dict) -> Type[HashableDictType]:
         "convert_dict_to_hashabledict is deprecated and will be removed in version 2.0. "
         "Use 'convert_to_hashable' instead.",
         DeprecationWarning,
-        stacklevel=2
+        stacklevel=2,
     )
-    
+
     for k in dict_obj:
         if isinstance(dict_obj[k], dict):
             convert_dict_to_hashabledict(dict_obj[k])
